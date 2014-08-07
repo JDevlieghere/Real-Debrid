@@ -1,4 +1,16 @@
+
 $(document).ready(function() {
+
+	chrome.storage.sync.get('user', function (result) {
+		var user = result.user;
+		chrome.storage.sync.get('pass', function (result) {
+			var pass = result.pass;
+			auth(user, pass, function(result){
+				console.log(result);
+			});
+		});
+	});
+
 	chrome.contextMenus.create({
 		"title": "Download using Real-Debrid",
 		"contexts": ["link", "selection"],

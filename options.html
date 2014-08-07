@@ -86,6 +86,19 @@
 
 			</div><!-- ./row -->
 		</div><!-- ./container -->
+		
+		<script type="text/javascript">
+			$("#save").click(function(event){ 
+				$(event.target).text("Saved!");
+				$(event.target).css({
+					"background-color": "#428bca",
+					"color" : "white"
+
+				});
+			 });
+
+		</script>
+		
 		<script src="options.js"></script>
   </body>
 </html>

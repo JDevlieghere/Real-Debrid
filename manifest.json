@@ -9,6 +9,7 @@
     "64" : "icon-64.png"
   },
   "permissions": [
+    "tabs",
     "contextMenus",
     "storage",
     "https://real-debrid.com/"

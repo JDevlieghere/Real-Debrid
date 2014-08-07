@@ -1,56 +1,80 @@
 $(document).ready(function() {
 	chrome.contextMenus.create({
-		"title": "Download with Real-Debrid",
-		"contexts": ["link"],
-		"onclick" : unrestrict
+		"title": "Download using Real-Debrid",
+		"contexts": ["link", "selection"],
+		"onclick" : contextClickHandler
 	});
 });
 
-function auth(user, pass){
+function contextClickHandler(info){
+	if(info.selectedText !== ""){
+		selectionHandler(info.selectionText);
+	}else if(info.linkUrl !== ""){
+		urlHandler(info.linkUrl);
+	}else{
+		console.log('Not supposed to happen')
+	}
+}
+
+function selectionHandler(selection){
+	// TODO: Split multiple URLS
+	// TODO: Check for valid URL
+	urlHandler(selection);
+}
+
+function urlHandler(url){
+	unrestrict(url, function(result){
+		if(!result.error){
+			download(result);
+		}else{
+			console.log(result);
+		}
+	});
+}
+
+function download(data){
+	var downloadUrl = data.generated_links[0][2];
+	if(downloadUrl){
+		window.open(downloadUrl);
+	}
+}
+
+function auth(user, pass, callback){
 	var apiUrl = 'https://real-debrid.com/ajax/login.php?user=' + user + '&pass=' + pass;
 	$.ajax(
-	    {
+		{
 			type: "GET",
 			url: apiUrl,
 			dataType: 'json',
 			data: {},
 			crossDomain: true,
-		    xhrFields: {
-                withCredentials: true
-            },
-			success: function(result){
-				if(result.error){
-					alert("Invalid credentials.");
-				}
+			xhrFields: {
+				withCredentials: true
 			},
+			success: callback,
 			error: function () {
-			    alert("Something went wrong...");
+				alert("Something went wrong...");
 			}
-	    }
+		}
 	);
 }
 
-function unrestrict(info) {
-	var downloadUrl = info.linkUrl;
-	var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + downloadUrl;
+function unrestrict(url, callback) {
+	var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
 	$.ajax(
-	    {
+		{
 			type: "GET",
 			url: apiUrl,
 			dataType: 'json',
 			data: {},
 			crossDomain: true,
-		    xhrFields: {
-                withCredentials: true
-            },
-			success: function(result){
-				console.log(result)
+			xhrFields: {
+				withCredentials: true
 			},
+			success: callback,
 			error: function (xhr) {
-			    alert("Something went wrong...");
+				alert("Something went wrong...");
 			}
-	    }
+		}
 	);
 }
-
-

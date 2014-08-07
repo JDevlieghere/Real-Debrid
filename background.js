@@ -39,7 +39,7 @@ function urlHandler(url){
 		if(!result.error){
 			download(result);
 		}else{
-			console.log(result);
+			alert(result.message);
 		}
 	});
 }
@@ -89,4 +89,28 @@ function unrestrict(url, callback) {
 			}
 		}
 	);
+}
+
+function onInstall() {
+	chrome.tabs.create({url: "options.html"});
+}
+
+function onUpdate() {
+	console.log("Extension Updated");
+}
+
+function getVersion() {
+	var details = chrome.app.getDetails();
+	return details.version;
+}
+
+function checkInstall(){
+	if (currVersion != prevVersion) {
+		if (typeof prevVersion == 'undefined') {
+		  onInstall();
+		} else {
+		  onUpdate();
+		}
+		localStorage['version'] = currVersion;
+	}
 }

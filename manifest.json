@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+
+  "name": "RealDebrid",
+  "description": "Real Debrid Google Chrome Extension",
+  "version": "1.0.0",
+  "icons" : {
+    "16" : "icon-16.png",
+    "64" : "icon-64.png"
+  },
+  "permissions": [
+    "tabs",
+    "contextMenus",
+    "storage",
+    "https://real-debrid.com/"
+  ],
+  "background": {
+    "scripts": [
+      "jquery.min.js",
+      "background.js"
+    ]
+  },
+  "options_page": "options.html",
+  "content_security_policy": "script-src 'self' https://real-debrid.com; object-src 'self'"
+}

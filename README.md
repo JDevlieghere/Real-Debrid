@@ -1,4 +1,4 @@
-RealDebrid
-==========
+Real-Debrid
+===========
 
-Real Debrid Google Chrome Extension
+An unobtrusive Google Chrome extension for Real-Debrid. The extension allows you to download a link or selection of links using the right-click (context) menu.

@@ -95,7 +95,7 @@ function unrestrict(url, callback) {
 }
 
 function onInstall() {
-	chrome.tabs.create({url: "options.html"});
+	chrome.tabs.create({url: "/src/options.html"});
 }
 
 function onUpdate() {

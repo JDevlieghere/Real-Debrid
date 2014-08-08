@@ -42,7 +42,10 @@ function urlHandler(url){
 function download(data){
 	var downloadUrl = data.generated_links[0][2];
 	if(downloadUrl){
-		window.open(downloadUrl);
+		chrome.tabs.create({
+			url: downloadUrl,
+			active: false
+		});
 	}
 }
 

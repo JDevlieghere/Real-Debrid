@@ -10,9 +10,15 @@ $(document).ready(function() {
 $("button#save").click(function() {
 	var user = $("input#username").val();
 	chrome.storage.sync.set({'user': user});
-
 	var pass = $("input#password").val();
 	chrome.storage.sync.set({'pass': pass});
-	
+
+	$(event.target).text("Saved!");
+	$(event.target).css({
+		"background-color": "#428bca",
+		"color" : "white"
+
+	});
+
 	return false;
 });

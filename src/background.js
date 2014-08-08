@@ -20,9 +20,9 @@ $(document).ready(function() {
 });
 
 function contextClickHandler(info){
-	if(info.selectedText !== ""){
+	if(typeof info.selectionText !== "undefined"){
 		selectionHandler(info.selectionText);
-	}else if(info.linkUrl !== ""){
+	}else if(typeof info.linkUrl !== "undefined"){
 		urlHandler(info.linkUrl);
 	}
 }
@@ -121,7 +121,7 @@ function checkInstall(){
 function notify(title, text){
 	var id = ++notificationID;
 	var options = {
-		iconUrl: "icon-256.png",
+		iconUrl: "/icons/icon-256.png",
 		type : "basic",
 		title: title,
 		message: text,

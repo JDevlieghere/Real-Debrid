@@ -1,19 +1,8 @@
 var notificationID = 0;
 
 $(document).ready(function() {
-
-	chrome.storage.sync.get('user', function (result) {
-		var user = result.user;
-		chrome.storage.sync.get('pass', function (result) {
-			var pass = result.pass;
-			auth(user, pass, function(result){
-				console.log(result);
-			});
-		});
-	});
-
 	chrome.contextMenus.create({
-		"title": "Download using Real-Debrid",
+		"title": "Download with Real-Debrid",
 		"contexts": ["link", "selection"],
 		"onclick" : contextClickHandler
 	});
@@ -54,26 +43,6 @@ function download(data){
 	}
 }
 
-function auth(user, pass, callback){
-	var apiUrl = 'https://real-debrid.com/ajax/login.php?user=' + user + '&pass=' + pass;
-	$.ajax(
-		{
-			type: "GET",
-			url: apiUrl,
-			dataType: 'json',
-			data: {},
-			crossDomain: true,
-			xhrFields: {
-				withCredentials: true
-			},
-			success: callback,
-			error: function () {
-				notify("Real Debrid","Login failed. Wrong credentials?");
-			}
-		}
-	);
-}
-
 function unrestrict(url, callback) {
 	var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
 	$.ajax(
@@ -95,7 +64,7 @@ function unrestrict(url, callback) {
 }
 
 function onInstall() {
-	chrome.tabs.create({url: "options.html"});
+	notify("Real Debrid", "Extension installed!");
 }
 
 function onUpdate() {
@@ -121,7 +90,7 @@ function checkInstall(){
 function notify(title, text){
 	var id = ++notificationID;
 	var options = {
-		iconUrl: "/icons/icon-256.png",
+		iconUrl: "/icons/icon-128.png",
 		type : "basic",
 		title: title,
 		message: text,

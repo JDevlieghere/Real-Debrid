@@ -1,3 +1,4 @@
+var notificationID = 0;
 
 $(document).ready(function() {
 
@@ -23,15 +24,17 @@ function contextClickHandler(info){
 		selectionHandler(info.selectionText);
 	}else if(info.linkUrl !== ""){
 		urlHandler(info.linkUrl);
-	}else{
-		console.log('Not supposed to happen')
 	}
 }
 
 function selectionHandler(selection){
-	// TODO: Split multiple URLS
-	// TODO: Check for valid URL
-	urlHandler(selection);
+	var urls = selection.split(" ");
+	var regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
+	$.each(urls, function(index, url){
+		if(url.match(regex)){
+			urlHandler(url);
+		}
+	});
 }
 
 function urlHandler(url){
@@ -39,7 +42,7 @@ function urlHandler(url){
 		if(!result.error){
 			download(result);
 		}else{
-			alert(result.message);
+			notify(result.message, url);
 		}
 	});
 }
@@ -65,7 +68,7 @@ function auth(user, pass, callback){
 			},
 			success: callback,
 			error: function () {
-				alert("Something went wrong...");
+				notify("Real Debrid","Login failed. Wrong credentials?");
 			}
 		}
 	);
@@ -85,7 +88,7 @@ function unrestrict(url, callback) {
 			},
 			success: callback,
 			error: function (xhr) {
-				alert("Something went wrong...");
+				notify("Real Debrid","Could not reach real-debrid.com");
 			}
 		}
 	);
@@ -96,7 +99,7 @@ function onInstall() {
 }
 
 function onUpdate() {
-	console.log("Extension Updated");
+	notify("Real Debrid", "Extension updated!");
 }
 
 function getVersion() {
@@ -113,4 +116,16 @@ function checkInstall(){
 		}
 		localStorage['version'] = currVersion;
 	}
+}
+
+function notify(title, text){
+	var id = ++notificationID;
+	var options = {
+		iconUrl: "icon-256.png",
+		type : "basic",
+		title: title,
+		message: text,
+		priority: 1
+	};
+	chrome.notifications.create("id"+id, options, function(){});
 }

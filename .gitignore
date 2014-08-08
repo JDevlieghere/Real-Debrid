@@ -6,5 +6,5 @@
 ehthumbs.db
 Thumbs.db
 
-.zip
-.crx
+*.zip
+*.crx

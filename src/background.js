@@ -1,6 +1,7 @@
 var notificationID = 0;
 
 $(document).ready(function() {
+	checkInstall();
 	chrome.contextMenus.create({
 		"title": "Download with Real-Debrid",
 		"contexts": ["link", "selection"],
@@ -30,6 +31,8 @@ function urlHandler(url){
 	unrestrict(url, function(result){
 		if(!result.error){
 			download(result);
+		}else if(result.error == 1){
+			notify("Real-Debrid", "Please login on real-debrid.com");
 		}else{
 			notify(result.message, url);
 		}
@@ -64,11 +67,11 @@ function unrestrict(url, callback) {
 }
 
 function onInstall() {
-	notify("Real Debrid", "Extension installed!");
+	notify("Real Debrid", "Extension installed");
 }
 
 function onUpdate() {
-	notify("Real Debrid", "Extension updated!");
+	notify("Real Debrid", "Extension updated to version " + getVersion());
 }
 
 function getVersion() {
@@ -77,6 +80,8 @@ function getVersion() {
 }
 
 function checkInstall(){
+	var currVersion = getVersion();
+	var prevVersion = localStorage['version'];
 	if (currVersion != prevVersion) {
 		if (typeof prevVersion == 'undefined') {
 		  onInstall();

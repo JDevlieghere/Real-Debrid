@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Real-Debrid",
   "description": "Real-Debrid Google Chrome Extension",
-  "version": "1.3.2",
+  "version": "1.4.1",
   "icons" : {
     "16" : "icons/icon-16.png",
     "64" : "icons/icon-64.png",
@@ -12,6 +12,7 @@
   "permissions": [
     "tabs",
     "contextMenus",
+    "downloads",
     "storage",
     "notifications",
     "https://real-debrid.com/"

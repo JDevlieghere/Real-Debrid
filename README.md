@@ -12,3 +12,6 @@ An unobtrusive Google Chrome extension for Real-Debrid. The extension allows you
 ![Desktop Notifications](http://i.imgur.com/FfX5pOK.png)
 
 ![Desktop Notifications](http://i.imgur.com/LIBAJkh.png)
+
+## License
+[Apache v2 License](https://github.com/JDevlieghere/Real-Debrid/blob/master/LICENSE)

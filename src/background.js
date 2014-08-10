@@ -21,6 +21,8 @@ var rd = new RealDebrid();
 
 $(document).ready(function() {
 	is.run();
+
+	// Add to Context Menu
 	chrome.contextMenus.create({
 		"title": "Download with Real-Debrid",
 		"contexts": ["link", "selection"],
@@ -32,9 +34,13 @@ $(document).ready(function() {
 			}
 		}
 	});
+
+	// Register Handlers
 	chrome.downloads.onChanged.addListener(dm.changeHandler);
+	chrome.notifications.onClicked.addListener(nf.clickHandler);
 });
 
+/* RealDebrid */
 function RealDebrid(){
 
 	var that = this;
@@ -54,7 +60,9 @@ function RealDebrid(){
 			if(!result.error){
 				that.download(result);
 			}else if(result.error == 1){
-				nf.basic("Real-Debrid", "Please login on real-debrid.com");
+				nf.error("Please make sure you are logged in. Click to go to real-debrid.com", function(){
+					chrome.tabs.create({url: 'https://real-debrid.com'}, function(){});
+				});
 			}else{
 				nf.basic(result.message, url);
 			}
@@ -79,7 +87,7 @@ function RealDebrid(){
 			},
 			success: callback,
 			error: function () {
-				nf.basic("Real-Debrid","Could not reach real-debrid.com");
+				nf.error("Could not reach real-debrid.com");
 			}
 		});
 	}
@@ -89,8 +97,10 @@ function RealDebrid(){
 function Notifier(){
 
 	var notificationId = 0;
+	var callbacks = {};
+	var that = this;
 
-	this.basic = function(title, text){
+	this.basic = function(title, text, onClicked){
 		var id = ++notificationId;
 		var options = {
 			iconUrl: "/icons/icon-128.png",
@@ -99,10 +109,29 @@ function Notifier(){
 			message: text,
 			priority: 1
 		};
-		chrome.notifications.create("id_"+id, options, function(){});
+		chrome.notifications.create("id_"+id, options, function(notificationId){
+			if(onClicked){
+				callbacks[notificationId] = onClicked;
+			}
+		});
+	}
+
+	this.error = function(text, callback){
+		that.basic("Error", text, callback);
+	}
+
+	this.info = function(text, callback){
+		that.basic("Real-Debrid", text, callback);
+	}
+
+	this.clickHandler = function(notificationId){
+		var callback = callbacks[notificationId];
+		if(callback){
+			callback();
+			delete callback;
+		}
 	}
 }
-
 
 /* Installer */
 function Installer(){
@@ -110,11 +139,11 @@ function Installer(){
 	var that = this;
 
 	this.onInstall = function(){
-		nf.basic("Real-Debrid", "Extension installed");
+		nf.info("Extension installed");
 	}
 
 	this.onUpdate = function(){
-		nf.basic("Real-Debrid", "Extension updated to version " + that.getVersion());
+		nf.info("Extension updated to version " + that.getVersion());
 	}
 
 	this.getVersion = function(){
@@ -150,13 +179,13 @@ function DownloadManager(){
 
 	this.checkComplete = function(){
 		if(active.length == 0){
-			nf.basic("Real-Debrid", "All download complete");
+			nf.info("All download complete");
 		}
 	}
 
 	this.changeHandler = function(downloadItemDelta){
 		var index = active.indexOf(downloadItemDelta.id);
-		if(index > -1 && typeof downloadItemDelta.state !== "undefined" && downloadItemDelta.state.current == "complete"){
+		if(index > -1 && downloadItemDelta.state && downloadItemDelta.state.current == "complete"){
 			active.splice(index, 1);
 			that.checkComplete();
 		}

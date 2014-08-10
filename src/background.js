@@ -60,7 +60,7 @@ function RealDebrid(){
 			if(!result.error){
 				that.download(result);
 			}else if(result.error == 1){
-				nf.error("Please make sure you are logged in. Click to go to real-debrid.com", function(){
+				nf.error("Please make sure you are logged in. Click here to go to real-debrid.com", function(){
 					chrome.tabs.create({url: 'https://real-debrid.com'}, function(){});
 				});
 			}else{
@@ -143,7 +143,10 @@ function Installer(){
 	}
 
 	this.onUpdate = function(){
-		nf.info("Extension updated to version " + that.getVersion());
+		var message = "Extension updated to version " + that.getVersion() + ". Click here to see all changes.";
+		nf.info(, function(message){
+			chrome.tabs.create({url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'}, function(){});
+		});
 	}
 
 	this.getVersion = function(){

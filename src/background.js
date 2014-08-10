@@ -144,7 +144,7 @@ function Installer(){
 
 	this.onUpdate = function(){
 		var message = "Extension updated to version " + that.getVersion() + ". Click here to see all changes.";
-		nf.info(, function(message){
+		nf.info(message, function(){
 			chrome.tabs.create({url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'}, function(){});
 		});
 	}

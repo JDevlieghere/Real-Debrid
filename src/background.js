@@ -74,11 +74,10 @@ function RealDebrid(){
 		dm.download(downloadUrl);
 	}
 
-	this.unrestrict = function(url, callback) {
-		var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
+	this.api = function(url, callback){
 		$.ajax({
 			type: "GET",
-			url: apiUrl,
+			url: url,
 			dataType: 'json',
 			data: {},
 			crossDomain: true,
@@ -90,6 +89,16 @@ function RealDebrid(){
 				nf.error("Could not reach real-debrid.com");
 			}
 		});
+	}
+
+	this.unrestrict = function(url, callback) {
+		var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
+		that.api(apiUrl, callback);
+	}
+
+	this.account = function(callback){ 
+		var apiUrl = 'https://real-debrid.com/api/account.php?out=json';
+		that.api(apiUrl, callback);
 	}
 }
 

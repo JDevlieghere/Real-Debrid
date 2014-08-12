@@ -97,7 +97,7 @@ function RealDebrid(){
 		that.api(apiUrl, callback);
 	};
 
-	this.account = function(callback){ 
+	this.account = function(callback){
 		var apiUrl = 'https://real-debrid.com/api/account.php?out=json';
 		that.api(apiUrl, callback);
 	};
@@ -185,7 +185,7 @@ function DownloadManager(){
 
 	this.download = function(url){
 		chrome.downloads.download({url: url}, function(downloadId){
-			active.push(downloadId);
+			that.addActive(downloadId);
 		});
 	};
 
@@ -195,12 +195,23 @@ function DownloadManager(){
 		}
 	};
 
+    this.addActive = function(id){
+        active.push(downloadId);
+    };
+    
+    this.removeActive = function(id){
+        var index = active.indexOf(id);
+        active.splice(index, 1);
+    };
+
 	this.changeHandler = function(downloadItemDelta){
-		console.log(downloadItemDelta);
-		var index = active.indexOf(downloadItemDelta.id);
-		if(index > -1 && downloadItemDelta.state && downloadItemDelta.state.current == "complete"){
-			active.splice(index, 1);
-			that.checkComplete();
+		if(active.indexOf(downloadItemDelta.id) > -1 && downloadItemDelta.state){
+            if(downloadItemDelta.state.current == "complete"){
+                that.checkComplete();
+                that.removeActive(downloadItemDelta.id);
+            }else if(downloadItemDelta.state.current == "interrupted"){
+                that.removeActive(downloadItemDelta.id);
+            }
 		}
 	};
 }

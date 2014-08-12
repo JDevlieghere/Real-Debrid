@@ -20,6 +20,7 @@ var nf = new Notifier();
 var rd = new RealDebrid();
 
 $(document).ready(function() {
+	// Run Installer
 	is.run();
 
 	// Add to Context Menu
@@ -171,7 +172,7 @@ function Installer(){
 /* Download Manager */
 function DownloadManager(){
 
-	var active 	= [];
+	var active = [];
 	var that = this;
 
 	this.download = function(url){
@@ -187,6 +188,7 @@ function DownloadManager(){
 	}
 
 	this.changeHandler = function(downloadItemDelta){
+		console.log(downloadItemDelta);
 		var index = active.indexOf(downloadItemDelta.id);
 		if(index > -1 && downloadItemDelta.state && downloadItemDelta.state.current == "complete"){
 			active.splice(index, 1);

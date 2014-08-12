@@ -2,8 +2,4 @@
 
 Features:
 
- - "Extension updated" links to changelog
-
-Bugfixes:
-
- -
+ - "Extension updated" links to the changelog

@@ -54,7 +54,7 @@ function RealDebrid(){
 				that.urlHandler(url);
 			}
 		});
-	}
+	};
 
 	this.urlHandler = function(url){
 		that.unrestrict(url, function(result){
@@ -68,12 +68,12 @@ function RealDebrid(){
 				nf.basic(result.message, url);
 			}
 		});
-	}
+	};
 
 	this.download = function(data){
 		var downloadUrl = data.generated_links[0][2];
 		dm.download(downloadUrl);
-	}
+	};
 
 	this.api = function(url, callback){
 		$.ajax({
@@ -90,17 +90,17 @@ function RealDebrid(){
 				nf.error("Could not reach real-debrid.com");
 			}
 		});
-	}
+	};
 
 	this.unrestrict = function(url, callback) {
 		var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
 		that.api(apiUrl, callback);
-	}
+	};
 
 	this.account = function(callback){ 
 		var apiUrl = 'https://real-debrid.com/api/account.php?out=json';
 		that.api(apiUrl, callback);
-	}
+	};
 }
 
 /* Notifier */
@@ -124,23 +124,22 @@ function Notifier(){
 				callbacks[notificationId] = onClicked;
 			}
 		});
-	}
+	};
 
 	this.error = function(text, callback){
 		that.basic("Error", text, callback);
-	}
+	};
 
 	this.info = function(text, callback){
 		that.basic("Real-Debrid", text, callback);
-	}
+	};
 
 	this.clickHandler = function(notificationId){
-		var callback = callbacks[notificationId];
-		if(callback){
-			callback();
-			delete callback;
+		if(callbacks[notificationId]){
+			callbacks[notificationId]();
+			delete callbacks[notificationId];
 		}
-	}
+	};
 }
 
 /* Installer */
@@ -150,19 +149,19 @@ function Installer(){
 
 	this.onInstall = function(){
 		nf.info("Extension installed");
-	}
+	};
 
 	this.onUpdate = function(){
 		var message = "Extension updated to version " + that.getVersion() + ". Click here to see all changes.";
 		nf.info(message, function(){
 			chrome.tabs.create({url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'}, function(){});
 		});
-	}
+	};
 
 	this.getVersion = function(){
 		var details = chrome.app.getDetails();
 		return details.version;
-	}
+	};
 
 	this.run = function(){
 		var currVersion = that.getVersion();
@@ -175,7 +174,7 @@ function Installer(){
 			}
 			localStorage['version'] = currVersion;
 		}
-	}
+	};
 }
 
 /* Download Manager */
@@ -188,13 +187,13 @@ function DownloadManager(){
 		chrome.downloads.download({url: url}, function(downloadId){
 			active.push(downloadId);
 		});
-	}
+	};
 
 	this.checkComplete = function(){
-		if(active.length == 0){
+		if(active.length === 0){
 			nf.info("All download complete");
 		}
-	}
+	};
 
 	this.changeHandler = function(downloadItemDelta){
 		console.log(downloadItemDelta);
@@ -203,5 +202,5 @@ function DownloadManager(){
 			active.splice(index, 1);
 			that.checkComplete();
 		}
-	}
+	};
 }

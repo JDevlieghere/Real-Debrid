@@ -33,7 +33,7 @@ $(document).ready(function() {
                 rd.selectionHandler(info.selectionText);
             } else if (typeof info.linkUrl !== "undefined") {
                 rd.urlHandler(info.linkUrl);
-            }else{
+            } else {
                 rd.urlHandler(info.pageUrl);
             }
         }
@@ -187,14 +187,18 @@ function Installer() {
 /* Download Manager */
 function DownloadManager() {
 
+    var queue = [];
     var active = [];
     var that = this;
+    var port = chrome.runtime.connect({
+        name: "realdebrid"
+    });
 
     this.download = function(url) {
         chrome.downloads.download({
             url: url
         }, function(downloadId) {
-            that.addActive(downloadId);
+            that.addToActive(downloadId);
         });
     };
 
@@ -204,22 +208,34 @@ function DownloadManager() {
         }
     };
 
-    this.addActive = function(id) {
-        active.push(downloadId);
+    this.addToQueue = function(id) {
+        queue.push(id)
     };
 
-    this.removeActive = function(id) {
+    this.addToActive = function(id) {
+        active.push(id);
+        port.postMessage({
+            status: "started",
+            downloadId: id
+        });
+    };
+
+    this.removeFromActive = function(id) {
         var index = active.indexOf(id);
         active.splice(index, 1);
+        port.postMessage({
+            status: "finished",
+            downloadId: id
+        });
     };
 
     this.changeHandler = function(downloadItemDelta) {
         if (active.indexOf(downloadItemDelta.id) > -1 && downloadItemDelta.state) {
             if (downloadItemDelta.state.current == "complete") {
                 that.checkComplete();
-                that.removeActive(downloadItemDelta.id);
+                that.removeFromActive(downloadItemDelta.id);
             } else if (downloadItemDelta.state.current == "interrupted") {
-                that.removeActive(downloadItemDelta.id);
+                that.removeFromActive(downloadItemDelta.id);
             }
         }
     };

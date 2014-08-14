@@ -26,12 +26,15 @@ $(document).ready(function() {
     // Add to Context Menu
     chrome.contextMenus.create({
         "title": "Download with Real-Debrid",
-        "contexts": ["link", "selection"],
+        "contexts": ["page", "link", "selection"],
         "onclick": function(info) {
+            console.log(info);
             if (typeof info.selectionText !== "undefined") {
                 rd.selectionHandler(info.selectionText);
             } else if (typeof info.linkUrl !== "undefined") {
                 rd.urlHandler(info.linkUrl);
+            }else{
+                rd.urlHandler(info.pageUrl);
             }
         }
     });

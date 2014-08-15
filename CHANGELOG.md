@@ -10,3 +10,4 @@ Features:
 Bugfixes:
 
  - Persistent storage of warnings
+ - Handle case where account information is requested when not logged in

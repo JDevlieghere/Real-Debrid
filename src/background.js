@@ -144,11 +144,13 @@ function RealDebrid() {
     };
 
     this.checkAccount = function() {
-        that.account(function(data) {
-            that.checkPremium(data);
-            $.each(data.limited, function(index, hoster) {
-                that.checkHoster(hoster);
-            });
+        that.account(function(result) {
+            if (!result.error) {
+                that.checkPremium(result);
+                $.each(result.limited, function(index, hoster) {
+                    that.checkHoster(hoster);
+                });
+            }
         });
     };
 
@@ -157,7 +159,7 @@ function RealDebrid() {
         chrome.storage.local.set({
             warnings: that.warnings
         }, function() {});
-    }
+    };
 
     this.removeWarning = function(warning) {
         var index = that.warnings.indexOf(warning);
@@ -165,7 +167,7 @@ function RealDebrid() {
         chrome.storage.local.set({
             warnings: that.warnings
         }, function() {});
-    }
+    };
 
 }
 

@@ -48,7 +48,7 @@ $(document).ready(function() {
 function RealDebrid() {
 
     this.warnings = [];
-    this.warningPercentage = 10;
+    this.warningPercentage = 75;
 
     var that = this;
 
@@ -80,7 +80,6 @@ function RealDebrid() {
 
     this.download = function(data) {
         var downloadUrl = data.generated_links[0][2];
-        console.log(downloadUrl);
         dm.download(downloadUrl);
     };
 
@@ -116,7 +115,8 @@ function RealDebrid() {
         var index = that.warnings.indexOf(hoster.name);
         var total = hoster.limit + hoster.additional_traffic;
         var used = (hoster.downloaded / total) * 100;
-        if (used > that.warningPercentage && index === -1) {
+        console.log(used);
+        if (used >= that.warningPercentage && index === -1) {
             nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used);
             that.warnings.push(hoster.name); 
         } else if (used < that.percentage && index !== -1) {
@@ -263,8 +263,8 @@ function DownloadManager() {
     this.changeHandler = function(downloadItemDelta) {
         if (that.active.indexOf(downloadItemDelta.id) > -1 && downloadItemDelta.state) {
             if (downloadItemDelta.state.current == "complete") {
-                that.checkComplete();
                 that.removeFromActive(downloadItemDelta.id);
+                that.checkComplete();
             } else if (downloadItemDelta.state.current == "interrupted") {
                 that.removeFromActive(downloadItemDelta.id);
             }

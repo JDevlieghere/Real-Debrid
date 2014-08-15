@@ -233,17 +233,23 @@ function Installer() {
 
     var that = this;
 
-    this.onInstall = function() {
+    this.onInstall = function(currVersion) {
         nf.info("Extension installed");
     };
 
-    this.onUpdate = function() {
-        var message = "Extension updated to version " + that.getVersion() + ". Click here to see all changes.";
-        nf.info(message, function() {
-            chrome.tabs.create({
-                url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'
-            }, function() {});
-        });
+    this.onUpdate = function(prevVersion, currVersion) {
+        var prevVersionDigits = prevVersion.split('.');
+        var currVersionDigits = currVersion.split('.');
+        if (prevVersionDigits.length >= 2 && currVersionDigits.length >= 2 && prevVersionDigits[0] == currVersionDigits[0] && prevVersionDigits[1] == currVersionDigits[1]) {
+            console.log("Extension updated (bugfix) to version " + currVersion);
+        } else {
+            var message = "Extension updated to version " + currVersion + ". Click here to see all changes.";
+            nf.info(message, function() {
+                chrome.tabs.create({
+                    url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'
+                }, function() {});
+            });
+        }
     };
 
     this.getVersion = function() {
@@ -256,9 +262,9 @@ function Installer() {
         var prevVersion = localStorage['version'];
         if (currVersion != prevVersion) {
             if (typeof prevVersion == 'undefined') {
-                that.onInstall();
+                that.onInstall(currVersion);
             } else {
-                that.onUpdate();
+                that.onUpdate(prevVersion, currVersion);
             }
             localStorage['version'] = currVersion;
         }

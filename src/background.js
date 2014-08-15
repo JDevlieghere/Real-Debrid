@@ -51,7 +51,7 @@ function RealDebrid() {
 
     this.warnings = [];
     this.warningPercentage = 75;
-    this.warningDays = 7;
+    this.warningDays = 1;
 
     var that = this;
 

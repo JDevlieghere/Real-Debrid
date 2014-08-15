@@ -28,7 +28,6 @@ $(document).ready(function() {
         "title": "Download with Real-Debrid",
         "contexts": ["page", "link", "selection"],
         "onclick": function(info) {
-            console.log(info);
             if (typeof info.selectionText !== "undefined") {
                 rd.selectionHandler(info.selectionText);
             } else if (typeof info.linkUrl !== "undefined") {
@@ -42,10 +41,14 @@ $(document).ready(function() {
     // Register Handlers
     chrome.downloads.onChanged.addListener(dm.changeHandler);
     chrome.notifications.onClicked.addListener(nf.clickHandler);
+
 });
 
 /* RealDebrid */
 function RealDebrid() {
+
+    this.warnings = [];
+    this.warningPercentage = 10;
 
     var that = this;
 
@@ -77,6 +80,7 @@ function RealDebrid() {
 
     this.download = function(data) {
         var downloadUrl = data.generated_links[0][2];
+        console.log(downloadUrl);
         dm.download(downloadUrl);
     };
 
@@ -106,17 +110,39 @@ function RealDebrid() {
         var apiUrl = 'https://real-debrid.com/api/account.php?out=json';
         that.api(apiUrl, callback);
     };
+
+
+    this.checkHoster = function(hoster) {
+        var index = that.warnings.indexOf(hoster.name);
+        var total = hoster.limit + hoster.additional_traffic;
+        var used = (hoster.downloaded / total) * 100;
+        if (used > that.warningPercentage && index === -1) {
+            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used);
+            that.warnings.push(hoster.name); 
+        } else if (used < that.percentage && index !== -1) {
+            that.warnings.splice(index, 1);
+        }
+    };
+
+    this.checkLimits = function() {
+        that.account(function(data) {
+            $.each(data.limited, function(index, hoster) {
+                that.checkHoster(hoster);
+            });
+        });
+    };
 }
 
 /* Notifier */
 function Notifier() {
 
-    var notificationId = 0;
-    var callbacks = {};
+    this.notificationId = 0;
+    this.callbacks = {};
+
     var that = this;
 
     this.basic = function(title, text, onClicked) {
-        var id = ++notificationId;
+        var id = ++that.notificationId;
         var options = {
             iconUrl: "/icons/icon-128.png",
             type: "basic",
@@ -126,10 +152,27 @@ function Notifier() {
         };
         chrome.notifications.create("id_" + id, options, function(notificationId) {
             if (onClicked) {
-                callbacks[notificationId] = onClicked;
+                that.callbacks[notificationId] = onClicked;
             }
         });
     };
+
+    this.progress = function(title, text, progress, onClicked) {
+        var id = ++that.notificationId;
+        var options = {
+            iconUrl: "/icons/icon-128.png",
+            type: "progress",
+            title: title,
+            message: text,
+            priority: 1,
+            progress: progress
+        }
+        chrome.notifications.create("id_" + id, options, function(notificationId) {
+            if (onClicked) {
+                that.callbacks[notificationId] = onClicked;
+            }
+        });
+    }
 
     this.error = function(text, callback) {
         that.basic("Error", text, callback);
@@ -140,9 +183,9 @@ function Notifier() {
     };
 
     this.clickHandler = function(notificationId) {
-        if (callbacks[notificationId]) {
-            callbacks[notificationId]();
-            delete callbacks[notificationId];
+        if (that.callbacks[notificationId]) {
+            that.callbacks[notificationId]();
+            delete that.callbacks[notificationId];
         }
     };
 }
@@ -187,12 +230,8 @@ function Installer() {
 /* Download Manager */
 function DownloadManager() {
 
-    var queue = [];
-    var active = [];
+    this.active = [];
     var that = this;
-    var port = chrome.runtime.connect({
-        name: "realdebrid"
-    });
 
     this.download = function(url) {
         chrome.downloads.download({
@@ -203,7 +242,7 @@ function DownloadManager() {
     };
 
     this.checkComplete = function() {
-        if (active.length === 0) {
+        if (that.active.length === 0) {
             nf.info("All download complete");
         }
     };
@@ -213,30 +252,23 @@ function DownloadManager() {
     };
 
     this.addToActive = function(id) {
-        active.push(id);
-        port.postMessage({
-            status: "started",
-            downloadId: id
-        });
+        that.active.push(id);
     };
 
     this.removeFromActive = function(id) {
-        var index = active.indexOf(id);
-        active.splice(index, 1);
-        port.postMessage({
-            status: "finished",
-            downloadId: id
-        });
+        var index = that.active.indexOf(id);
+        that.active.splice(index, 1);
     };
 
     this.changeHandler = function(downloadItemDelta) {
-        if (active.indexOf(downloadItemDelta.id) > -1 && downloadItemDelta.state) {
+        if (that.active.indexOf(downloadItemDelta.id) > -1 && downloadItemDelta.state) {
             if (downloadItemDelta.state.current == "complete") {
                 that.checkComplete();
                 that.removeFromActive(downloadItemDelta.id);
             } else if (downloadItemDelta.state.current == "interrupted") {
                 that.removeFromActive(downloadItemDelta.id);
             }
+            rd.checkLimits();
         }
     };
 }

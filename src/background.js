@@ -20,174 +20,264 @@ var nf = new Notifier();
 var rd = new RealDebrid();
 
 $(document).ready(function() {
-	is.run();
+    // Run Installer
+    is.run();
 
-	// Add to Context Menu
-	chrome.contextMenus.create({
-		"title": "Download with Real-Debrid",
-		"contexts": ["link", "selection"],
-		"onclick" : function(info){
-			if(typeof info.selectionText !== "undefined"){
-				rd.selectionHandler(info.selectionText);
-			}else if(typeof info.linkUrl !== "undefined"){
-				rd.urlHandler(info.linkUrl);
-			}
-		}
-	});
+    // Add to Context Menu
+    chrome.contextMenus.create({
+        "title": "Download with Real-Debrid",
+        "contexts": ["page", "link", "selection"],
+        "onclick": function(info) {
+            if (typeof info.selectionText !== "undefined") {
+                rd.selectionHandler(info.selectionText);
+            } else if (typeof info.linkUrl !== "undefined") {
+                rd.urlHandler(info.linkUrl);
+            } else {
+                rd.urlHandler(info.pageUrl);
+            }
+        }
+    });
 
-	// Register Handlers
-	chrome.downloads.onChanged.addListener(dm.changeHandler);
-	chrome.notifications.onClicked.addListener(nf.clickHandler);
+    // Register Handlers
+    chrome.downloads.onChanged.addListener(dm.changeHandler);
+    chrome.notifications.onClicked.addListener(nf.clickHandler);
+
+    // Check Account
+    rd.checkAccount();
 });
 
 /* RealDebrid */
-function RealDebrid(){
+function RealDebrid() {
 
-	var that = this;
+    this.warnings = [];
+    this.warningPercentage = 75;
+    this.warningDays = 7;
 
-	this.selectionHandler = function(selection){
-		var urls = selection.split(" ");
-		var regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
-		$.each(urls, function(index, url){
-			if(url.match(regex)){
-				that.urlHandler(url);
-			}
-		});
-	}
+    var that = this;
 
-	this.urlHandler = function(url){
-		that.unrestrict(url, function(result){
-			if(!result.error){
-				that.download(result);
-			}else if(result.error == 1){
-				nf.error("Please make sure you are logged in. Click to go to real-debrid.com", function(){
-					chrome.tabs.create({url: 'https://real-debrid.com'}, function(){});
-				});
-			}else{
-				nf.basic(result.message, url);
-			}
-		});
-	}
+    this.selectionHandler = function(selection) {
+        var urls = selection.split(" ");
+        var regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
+        $.each(urls, function(index, url) {
+            if (url.match(regex)) {
+                that.urlHandler(url);
+            }
+        });
+    };
 
-	this.download = function(data){
-		var downloadUrl = data.generated_links[0][2];
-		dm.download(downloadUrl);
-	}
+    this.urlHandler = function(url) {
+        that.unrestrict(url, function(result) {
+            if (!result.error) {
+                that.download(result);
+            } else if (result.error == 1) {
+                nf.error("Please make sure you are logged in. Click here to go to real-debrid.com", function() {
+                    chrome.tabs.create({
+                        url: 'https://real-debrid.com'
+                    }, function() {});
+                });
+            } else {
+                nf.basic(result.message, url);
+            }
+        });
+    };
 
-	this.unrestrict = function(url, callback) {
-		var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
-		$.ajax({
-			type: "GET",
-			url: apiUrl,
-			dataType: 'json',
-			data: {},
-			crossDomain: true,
-			xhrFields: {
-				withCredentials: true
-			},
-			success: callback,
-			error: function () {
-				nf.error("Could not reach real-debrid.com");
-			}
-		});
-	}
+    this.download = function(data) {
+        var downloadUrl = data.generated_links[0][2];
+        dm.download(downloadUrl);
+    };
+
+    this.api = function(url, callback) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'json',
+            data: {},
+            crossDomain: true,
+            xhrFields: {
+                withCredentials: true
+            },
+            success: callback,
+            error: function() {
+                nf.error("Could not reach real-debrid.com");
+            }
+        });
+    };
+
+    this.unrestrict = function(url, callback) {
+        var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
+        that.api(apiUrl, callback);
+    };
+
+    this.account = function(callback) {
+        var apiUrl = 'https://real-debrid.com/api/account.php?out=json';
+        that.api(apiUrl, callback);
+    };
+
+    this.checkHoster = function(hoster) {
+        var index = that.warnings.indexOf(hoster.name);
+        var total = hoster.limit + hoster.additional_traffic;
+        var used = (hoster.downloaded / total) * 100;
+        if (used >= that.warningPercentage && index === -1) {
+            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used);
+            that.warnings.push(hoster.name);
+        } else if (used < that.percentage && index !== -1) {
+            that.warnings.splice(index, 1);
+        }
+    };
+
+    this.checkPremium = function(data) {
+        var daysLeft = Math.round(data['premium-left'] / (-1 * 24 * 60 * 60));
+        if(daysLeft < that.warningDays){
+            nf.info("You have only " + daysLeft + " days left of premium.");
+        }
+    };
+
+    this.checkAccount = function() {
+        that.account(function(data) {
+            that.checkPremium(data);
+            $.each(data.limited, function(index, hoster) {
+                that.checkHoster(hoster);
+            });
+        });
+    };
 }
 
 /* Notifier */
-function Notifier(){
+function Notifier() {
 
-	var notificationId = 0;
-	var callbacks = {};
-	var that = this;
+    this.notificationId = 0;
+    this.callbacks = {};
 
-	this.basic = function(title, text, onClicked){
-		var id = ++notificationId;
-		var options = {
-			iconUrl: "/icons/icon-128.png",
-			type : "basic",
-			title: title,
-			message: text,
-			priority: 1
-		};
-		chrome.notifications.create("id_"+id, options, function(notificationId){
-			if(onClicked){
-				callbacks[notificationId] = onClicked;
-			}
-		});
-	}
+    var that = this;
 
-	this.error = function(text, callback){
-		that.basic("Error", text, callback);
-	}
+    this.basic = function(title, text, onClicked) {
+        var id = ++that.notificationId;
+        var options = {
+            iconUrl: "/icons/icon-128.png",
+            type: "basic",
+            title: title,
+            message: text,
+            priority: 1
+        };
+        chrome.notifications.create("id_" + id, options, function(notificationId) {
+            if (onClicked) {
+                that.callbacks[notificationId] = onClicked;
+            }
+        });
+    };
 
-	this.info = function(text, callback){
-		that.basic("Real-Debrid", text, callback);
-	}
+    this.progress = function(title, text, progress, onClicked) {
+        var id = ++that.notificationId;
+        var options = {
+            iconUrl: "/icons/icon-128.png",
+            type: "progress",
+            title: title,
+            message: text,
+            priority: 1,
+            progress: progress
+        }
+        chrome.notifications.create("id_" + id, options, function(notificationId) {
+            if (onClicked) {
+                that.callbacks[notificationId] = onClicked;
+            }
+        });
+    }
 
-	this.clickHandler = function(notificationId){
-		var callback = callbacks[notificationId];
-		if(callback){
-			callback();
-			delete callback;
-		}
-	}
+    this.error = function(text, callback) {
+        that.basic("Error", text, callback);
+    };
+
+    this.info = function(text, callback) {
+        that.basic("Real-Debrid", text, callback);
+    };
+
+    this.clickHandler = function(notificationId) {
+        if (that.callbacks[notificationId]) {
+            that.callbacks[notificationId]();
+            delete that.callbacks[notificationId];
+        }
+    };
 }
 
 /* Installer */
-function Installer(){
+function Installer() {
 
-	var that = this;
+    var that = this;
 
-	this.onInstall = function(){
-		nf.info("Extension installed");
-	}
+    this.onInstall = function() {
+        nf.info("Extension installed");
+    };
 
-	this.onUpdate = function(){
-		nf.info("Extension updated to version " + that.getVersion());
-	}
+    this.onUpdate = function() {
+        var message = "Extension updated to version " + that.getVersion() + ". Click here to see all changes.";
+        nf.info(message, function() {
+            chrome.tabs.create({
+                url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'
+            }, function() {});
+        });
+    };
 
-	this.getVersion = function(){
-		var details = chrome.app.getDetails();
-		return details.version;
-	}
+    this.getVersion = function() {
+        var details = chrome.app.getDetails();
+        return details.version;
+    };
 
-	this.run = function(){
-		var currVersion = that.getVersion();
-		var prevVersion = localStorage['version'];
-		if (currVersion != prevVersion) {
-			if (typeof prevVersion == 'undefined') {
-			  that.onInstall();
-			} else {
-			  that.onUpdate();
-			}
-			localStorage['version'] = currVersion;
-		}
-	}
+    this.run = function() {
+        var currVersion = that.getVersion();
+        var prevVersion = localStorage['version'];
+        if (currVersion != prevVersion) {
+            if (typeof prevVersion == 'undefined') {
+                that.onInstall();
+            } else {
+                that.onUpdate();
+            }
+            localStorage['version'] = currVersion;
+        }
+    };
 }
 
 /* Download Manager */
-function DownloadManager(){
+function DownloadManager() {
 
-	var active 	= [];
-	var that = this;
+    this.active = [];
+    var that = this;
 
-	this.download = function(url){
-		chrome.downloads.download({url: url}, function(downloadId){
-			active.push(downloadId);
-		});
-	}
+    this.download = function(url) {
+        chrome.downloads.download({
+            url: url
+        }, function(downloadId) {
+            that.addToActive(downloadId);
+        });
+    };
 
-	this.checkComplete = function(){
-		if(active.length == 0){
-			nf.info("All download complete");
-		}
-	}
+    this.checkComplete = function() {
+        if (that.active.length === 0) {
+            nf.info("All download complete");
+        }
+    };
 
-	this.changeHandler = function(downloadItemDelta){
-		var index = active.indexOf(downloadItemDelta.id);
-		if(index > -1 && downloadItemDelta.state && downloadItemDelta.state.current == "complete"){
-			active.splice(index, 1);
-			that.checkComplete();
-		}
-	}
+    this.addToQueue = function(id) {
+        queue.push(id)
+    };
+
+    this.addToActive = function(id) {
+        that.active.push(id);
+    };
+
+    this.removeFromActive = function(id) {
+        var index = that.active.indexOf(id);
+        that.active.splice(index, 1);
+    };
+
+    this.changeHandler = function(downloadItemDelta) {
+        if (that.active.indexOf(downloadItemDelta.id) > -1 && downloadItemDelta.state) {
+            if (downloadItemDelta.state.current == "complete") {
+                that.removeFromActive(downloadItemDelta.id);
+                that.checkComplete();
+            } else if (downloadItemDelta.state.current == "interrupted") {
+                that.removeFromActive(downloadItemDelta.id);
+            }
+            rd.checkAccount();
+        }
+    };
 }

@@ -12,7 +12,7 @@ An unobtrusive Google Chrome extension for Real-Debrid. The extension allows you
 ## FAQ
 
 ##### Don't I need to enter my login?
-No, the extension does not need your credentials.Just make sure you're logged in on real-debrid.com.
+No, the extension does not need your credentials. Just make sure you're logged in on real-debrid.com.
 
 ##### Do I have to wait until the download starts?
 Once you've clicked on *Download with Real-Debrid* you can navigate away from the current page. Your download will start as soon as the link is unrestricted.

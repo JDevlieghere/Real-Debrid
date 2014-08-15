@@ -117,7 +117,6 @@ function RealDebrid() {
         var index = that.warnings.indexOf(hoster.name);
         var total = hoster.limit + hoster.additional_traffic;
         var used = (hoster.downloaded / total) * 100;
-        console.log(used);
         if (used >= that.warningPercentage && index === -1) {
             nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used);
             that.warnings.push(hoster.name);

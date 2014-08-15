@@ -51,9 +51,15 @@ function RealDebrid() {
 
     this.warnings = [];
     this.warningPercentage = 75;
-    this.warningDays = 1;
+    this.warningDays = 7;
 
     var that = this;
+
+    chrome.storage.local.get({
+        warnings: []
+    }, function(result) {
+        that.warnings = result.warnings;
+    });
 
     this.selectionHandler = function(selection) {
         var urls = selection.split(" ");
@@ -119,9 +125,9 @@ function RealDebrid() {
         var used = (hoster.downloaded / total) * 100;
         if (used >= that.warningPercentage && index === -1) {
             nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used);
-            that.warnings.push(hoster.name);
+            that.storeWarning(hoster.name);
         } else if (used < that.percentage && index !== -1) {
-            that.warnings.splice(index, 1);
+            that.removeWarning(index, 1);
         }
     };
 
@@ -129,11 +135,11 @@ function RealDebrid() {
         var key = 'premium-left';
         var daysLeft = Math.round(data[key] / (-1 * 24 * 60 * 60));
         var index = that.warnings.indexOf(key);
-        if(daysLeft <= that.warningDays && index === -1){
+        if (daysLeft <= that.warningDays && index === -1) {
             nf.info("You have only " + daysLeft + " days left of premium.");
-            that.warnings.push(key);
-        }else if(daysLeft > that.warningDays && index !== -1){
-            that.warnings.splice(index, 1);
+            that.storeWarning(key);
+        } else if (daysLeft > that.warningDays && index !== -1) {
+            that.removeWarning(key);
         }
     };
 
@@ -145,6 +151,22 @@ function RealDebrid() {
             });
         });
     };
+
+    this.storeWarning = function(warning) {
+        that.warnings.push(warning);
+        chrome.storage.local.set({
+            warnings: that.warnings
+        }, function() {});
+    }
+
+    this.removeWarning = function(warning) {
+        var index = that.warnings.indexOf(warning);
+        that.warnings.splice(index, 1);
+        chrome.storage.local.set({
+            warnings: that.warnings
+        }, function() {});
+    }
+
 }
 
 /* Notifier */

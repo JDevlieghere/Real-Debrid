@@ -42,6 +42,8 @@ $(document).ready(function() {
     chrome.downloads.onChanged.addListener(dm.changeHandler);
     chrome.notifications.onClicked.addListener(nf.clickHandler);
 
+    // Check Account
+    rd.checkAccount();
 });
 
 /* RealDebrid */
@@ -49,6 +51,7 @@ function RealDebrid() {
 
     this.warnings = [];
     this.warningPercentage = 75;
+    this.warningDays = 7;
 
     var that = this;
 
@@ -110,7 +113,6 @@ function RealDebrid() {
         that.api(apiUrl, callback);
     };
 
-
     this.checkHoster = function(hoster) {
         var index = that.warnings.indexOf(hoster.name);
         var total = hoster.limit + hoster.additional_traffic;
@@ -118,14 +120,22 @@ function RealDebrid() {
         console.log(used);
         if (used >= that.warningPercentage && index === -1) {
             nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used);
-            that.warnings.push(hoster.name); 
+            that.warnings.push(hoster.name);
         } else if (used < that.percentage && index !== -1) {
             that.warnings.splice(index, 1);
         }
     };
 
-    this.checkLimits = function() {
+    this.checkPremium = function(data) {
+        var daysLeft = Math.round(data['premium-left'] / (-1 * 24 * 60 * 60));
+        if(daysLeft < that.warningDays){
+            nf.info("You have only " + daysLeft + " days left of premium.");
+        }
+    };
+
+    this.checkAccount = function() {
         that.account(function(data) {
+            that.checkPremium(data);
             $.each(data.limited, function(index, hoster) {
                 that.checkHoster(hoster);
             });
@@ -268,7 +278,7 @@ function DownloadManager() {
             } else if (downloadItemDelta.state.current == "interrupted") {
                 that.removeFromActive(downloadItemDelta.id);
             }
-            rd.checkLimits();
+            rd.checkAccount();
         }
     };
 }

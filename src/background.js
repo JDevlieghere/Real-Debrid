@@ -51,7 +51,7 @@ function RealDebrid() {
 
     this.warnings = [];
     this.warningPercentage = 75;
-    this.warningDays = 7;
+    this.warningDays = 100;
 
     var that = this;
 
@@ -126,9 +126,14 @@ function RealDebrid() {
     };
 
     this.checkPremium = function(data) {
-        var daysLeft = Math.round(data['premium-left'] / (-1 * 24 * 60 * 60));
-        if(daysLeft < that.warningDays){
+        var key = 'premium-left';
+        var daysLeft = Math.round(data[key] / (-1 * 24 * 60 * 60));
+        var index = that.warnings.indexOf(key);
+        if(daysLeft <= that.warningDays && index === -1){
             nf.info("You have only " + daysLeft + " days left of premium.");
+            that.warnings.push(key);
+        }else if(daysLeft > that.warningDays && index !== -1){
+            that.warnings.splice(index, 1);
         }
     };
 

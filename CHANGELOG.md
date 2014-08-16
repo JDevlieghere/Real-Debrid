@@ -12,3 +12,4 @@ Bugfixes:
  - Persistent storage of warnings
  - Handle case where account information is requested when not logged in
  - No "extension updated" notification in case of bugfix
+ - Typo fixed (Thanks to Nele)

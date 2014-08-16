@@ -17,7 +17,7 @@ limitations under the License.
 var is = new Installer();
 var dm = new DownloadManager();
 var nf = new Notifier();
-var rd = new RealDebrid();
+var rd = new RealDebrid(75, 7);
 
 $(document).ready(function() {
     // Run Installer
@@ -47,11 +47,11 @@ $(document).ready(function() {
 });
 
 /* RealDebrid */
-function RealDebrid() {
+function RealDebrid(warningPercentage, warningDays) {
 
     this.warnings = [];
-    this.warningPercentage = 75;
-    this.warningDays = 7;
+    this.warningPercentage = warningPercentage;
+    this.warningDays = warningDays;
 
     var that = this;
 
@@ -287,7 +287,7 @@ function DownloadManager() {
 
     this.checkComplete = function() {
         if (that.active.length === 0) {
-            nf.info("All download complete");
+            nf.info("All downloads complete");
         }
     };
 

@@ -20,9 +20,6 @@ var nf = new Notifier();
 var rd = new RealDebrid(75, 7);
 
 $(document).ready(function() {
-    // Run Installer
-    is.run();
-
     // Add to Context Menu
     chrome.contextMenus.create({
         "title": "Download with Real-Debrid",
@@ -41,6 +38,7 @@ $(document).ready(function() {
     // Register Handlers
     chrome.downloads.onChanged.addListener(dm.changeHandler);
     chrome.notifications.onClicked.addListener(nf.clickHandler);
+    chrome.runtime.onInstalled.addListener(is.installHandler);
 
     // Check Account
     rd.checkAccount();
@@ -252,23 +250,15 @@ function Installer() {
         }
     };
 
-    this.getVersion = function() {
-        var details = chrome.app.getDetails();
-        return details.version;
-    };
-
-    this.run = function() {
-        var currVersion = that.getVersion();
-        var prevVersion = localStorage['version'];
-        if (currVersion != prevVersion) {
-            if (typeof prevVersion == 'undefined') {
-                that.onInstall(currVersion);
-            } else {
-                that.onUpdate(prevVersion, currVersion);
-            }
-            localStorage['version'] = currVersion;
+    this.installHandler = function(details){
+        var currVersion = chrome.runtime.getManifest().version;
+        if(details.reason == "install"){
+            that.onInstall(currVersion)
+        }else if(details.reason == "update"){
+            that.onUpdate(details.previousVersion, currVersion);
         }
     };
+
 }
 
 /* Download Manager */

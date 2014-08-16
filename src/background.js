@@ -55,6 +55,12 @@ function RealDebrid() {
 
     var that = this;
 
+    chrome.storage.local.get({
+        warnings: []
+    }, function(result) {
+        that.warnings = result.warnings;
+    });
+
     this.selectionHandler = function(selection) {
         var urls = selection.split(" ");
         var regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
@@ -119,27 +125,50 @@ function RealDebrid() {
         var used = (hoster.downloaded / total) * 100;
         if (used >= that.warningPercentage && index === -1) {
             nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used);
-            that.warnings.push(hoster.name);
+            that.storeWarning(hoster.name);
         } else if (used < that.percentage && index !== -1) {
-            that.warnings.splice(index, 1);
+            that.removeWarning(index, 1);
         }
     };
 
     this.checkPremium = function(data) {
-        var daysLeft = Math.round(data['premium-left'] / (-1 * 24 * 60 * 60));
-        if(daysLeft < that.warningDays){
+        var key = 'premium-left';
+        var daysLeft = Math.round(data[key] / (-1 * 24 * 60 * 60));
+        var index = that.warnings.indexOf(key);
+        if (daysLeft <= that.warningDays && index === -1) {
             nf.info("You have only " + daysLeft + " days left of premium.");
+            that.storeWarning(key);
+        } else if (daysLeft > that.warningDays && index !== -1) {
+            that.removeWarning(key);
         }
     };
 
     this.checkAccount = function() {
-        that.account(function(data) {
-            that.checkPremium(data);
-            $.each(data.limited, function(index, hoster) {
-                that.checkHoster(hoster);
-            });
+        that.account(function(result) {
+            if (!result.error) {
+                that.checkPremium(result);
+                $.each(result.limited, function(index, hoster) {
+                    that.checkHoster(hoster);
+                });
+            }
         });
     };
+
+    this.storeWarning = function(warning) {
+        that.warnings.push(warning);
+        chrome.storage.local.set({
+            warnings: that.warnings
+        }, function() {});
+    };
+
+    this.removeWarning = function(warning) {
+        var index = that.warnings.indexOf(warning);
+        that.warnings.splice(index, 1);
+        chrome.storage.local.set({
+            warnings: that.warnings
+        }, function() {});
+    };
+
 }
 
 /* Notifier */
@@ -204,17 +233,23 @@ function Installer() {
 
     var that = this;
 
-    this.onInstall = function() {
+    this.onInstall = function(currVersion) {
         nf.info("Extension installed");
     };
 
-    this.onUpdate = function() {
-        var message = "Extension updated to version " + that.getVersion() + ". Click here to see all changes.";
-        nf.info(message, function() {
-            chrome.tabs.create({
-                url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'
-            }, function() {});
-        });
+    this.onUpdate = function(prevVersion, currVersion) {
+        var prevVersionDigits = prevVersion.split('.');
+        var currVersionDigits = currVersion.split('.');
+        if (prevVersionDigits.length >= 2 && currVersionDigits.length >= 2 && prevVersionDigits[0] == currVersionDigits[0] && prevVersionDigits[1] == currVersionDigits[1]) {
+            console.log("Extension updated (bugfix) to version " + currVersion);
+        } else {
+            var message = "Extension updated to version " + currVersion + ". Click here to see all changes.";
+            nf.info(message, function() {
+                chrome.tabs.create({
+                    url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'
+                }, function() {});
+            });
+        }
     };
 
     this.getVersion = function() {
@@ -227,9 +262,9 @@ function Installer() {
         var prevVersion = localStorage['version'];
         if (currVersion != prevVersion) {
             if (typeof prevVersion == 'undefined') {
-                that.onInstall();
+                that.onInstall(currVersion);
             } else {
-                that.onUpdate();
+                that.onUpdate(prevVersion, currVersion);
             }
             localStorage['version'] = currVersion;
         }

@@ -202,13 +202,13 @@ function Notifier() {
             message: text,
             priority: 1,
             progress: progress
-        }
+        };
         chrome.notifications.create("id_" + id, options, function(notificationId) {
             if (onClicked) {
                 that.callbacks[notificationId] = onClicked;
             }
         });
-    }
+    };
 
     this.error = function(text, callback) {
         that.basic("Error", text, callback);
@@ -253,7 +253,7 @@ function Installer() {
     this.installHandler = function(details){
         var currVersion = chrome.runtime.getManifest().version;
         if(details.reason == "install"){
-            that.onInstall(currVersion)
+            that.onInstall(currVersion);
         }else if(details.reason == "update"){
             that.onUpdate(details.previousVersion, currVersion);
         }
@@ -279,10 +279,6 @@ function DownloadManager() {
         if (that.active.length === 0) {
             nf.info("All downloads complete");
         }
-    };
-
-    this.addToQueue = function(id) {
-        queue.push(id)
     };
 
     this.addToActive = function(id) {

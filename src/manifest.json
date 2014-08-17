@@ -22,5 +22,6 @@
       "libs/jquery.min.js",
       "js/background.js"
     ]
-  }
+  },
+  "options_page": "html/options.html"
 }

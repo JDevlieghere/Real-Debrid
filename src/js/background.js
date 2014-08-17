@@ -250,11 +250,11 @@ function Installer() {
         }
     };
 
-    this.installHandler = function(details){
+    this.installHandler = function(details) {
         var currVersion = chrome.runtime.getManifest().version;
-        if(details.reason == "install"){
+        if (details.reason == "install") {
             that.onInstall(currVersion);
-        }else if(details.reason == "update"){
+        } else if (details.reason == "update") {
             that.onUpdate(details.previousVersion, currVersion);
         }
     };

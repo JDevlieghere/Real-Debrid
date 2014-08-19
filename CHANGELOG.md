@@ -3,7 +3,7 @@
 Features:
 
  - Options page
- - Configurable warnigs
+ - Configurable warnings
 
 Bugfixes:
  

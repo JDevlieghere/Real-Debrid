@@ -35,6 +35,13 @@ module.exports = function(grunt) {
             sass: {
                 files: 'src/scss/*.scss',
                 tasks: ['sass']
+            },
+            js: {
+                files: 'src/js/*.js',
+                tasks: ['jshint', 'jsbeautifier'],
+                options: {
+                    spawn: false
+                }
             }
         }
     });
@@ -46,6 +53,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('default', [
+        'sass',
+        'jshint',
+        'jsbeautifier'
+    ]);
+
+    grunt.registerTask('build', [
         'sass',
         'jshint',
         'jsbeautifier',

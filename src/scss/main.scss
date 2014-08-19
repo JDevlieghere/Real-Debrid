@@ -1,5 +1,3 @@
-@import "_reset.scss";
-
 $background-color: #FFF;
 $font-color: #444;
 $font-size: 16px;
@@ -16,12 +14,6 @@ body{
     color: $font-color;
     font-family: $font-stack;
 }
-
-h1 { font-size: 2em; font-weight: bold; }
-h2 { font-size: 1.5em; font-weight: bold; }
-h3 { font-size: 1.17em; font-weight: bold; }
-h5 { font-size: .83em; }
-h6 { font-size: .75em; }
 
 ul {
 	margin: 10px;
@@ -50,21 +42,6 @@ ol ol, ul ol {
 	margin-left: 15px;
 }
 
-form{
-	display: flex;
-	flex-flow: row wrap;
-	width: 450px;
-}
-
-label {
-	display: block;
-	width: 200px;
-}
-
-input, textarea {
-	width: 250px;
-	margin-bottom: 7px;
-}
 
 @import "_typography.scss";
 @import "_sidebar.scss";

@@ -3,6 +3,8 @@ $font-color: #444;
 $font-size: 16px;
 $font-stack: sans-serif;
 
+$label-width: 200px;
+
 * {
     margin: 0;
     padding: 0;
@@ -41,7 +43,6 @@ ol ol, ul ol {
 	list-style-position: inside;
 	margin-left: 15px;
 }
-
 
 @import "_typography.scss";
 @import "_sidebar.scss";

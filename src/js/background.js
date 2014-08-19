@@ -192,7 +192,7 @@ function RealDebrid(warningPercentage, warningDays) {
         var total = hoster.limit + hoster.additional_traffic;
         var used = (hoster.downloaded / total) * 100;
         if (used >= that.warningPercentage && index === -1) {
-            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", function(){
+            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", function() {
                 chrome.tabs.create({
                     url: 'html/options.html'
                 }, function() {});
@@ -208,7 +208,7 @@ function RealDebrid(warningPercentage, warningDays) {
         var daysLeft = Math.round(data[key] / (-1 * 24 * 60 * 60));
         var index = that.warnings.indexOf(key);
         if (daysLeft <= that.warningDays && index === -1) {
-            nf.info("You have only " + daysLeft + " days left of premium. Click here to change warnings preferences.", function(){
+            nf.info("You have only " + daysLeft + " days left of premium. Click here to change warnings preferences.", function() {
                 chrome.tabs.create({
                     url: 'html/options.html'
                 }, function() {});

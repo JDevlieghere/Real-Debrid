@@ -17,10 +17,14 @@ limitations under the License.
 var is = new Installer();
 var dm = new DownloadManager();
 var nf = new Notifier();
-var rd = new RealDebrid(75, 7);
+var op = new Options();
+var rd;
 
-$(document).ready(function() {
-    // Add to Context Menu
+// Register Options Handler
+op.addListener(function() {
+
+    rd = new RealDebrid(op.values.warningPercentage, op.values.warningDays);
+
     chrome.contextMenus.create({
         "title": "Download with Real-Debrid",
         "contexts": ["page", "link", "selection"],
@@ -35,14 +39,79 @@ $(document).ready(function() {
         }
     });
 
-    // Register Handlers
-    chrome.downloads.onChanged.addListener(dm.changeHandler);
-    chrome.notifications.onClicked.addListener(nf.clickHandler);
-    chrome.runtime.onInstalled.addListener(is.installHandler);
-
-    // Check Account
-    rd.checkAccount();
 });
+
+// Load Options
+op.load();
+
+// Register Chrome Handlers
+chrome.downloads.onChanged.addListener(dm.changeHandler);
+chrome.notifications.onClicked.addListener(nf.clickHandler);
+chrome.runtime.onInstalled.addListener(is.installHandler);
+chrome.storage.onChanged.addListener(op.changeHandler);
+
+
+function Options() {
+
+    this.values = {};
+    this.onLoaded = document.createEvent('Event');
+
+    var that = this;
+
+    this.addListener = function(handler) {
+        document.addEventListener('onLoaded', handler, false);
+    };
+
+    this.isReady = function() {
+        var ready = true;
+        for (var key in that.values) {
+            ready = ready && that.values[key];
+        }
+        return ready;
+    };
+
+    this.checkReady = function() {
+        if (that.isReady()) {
+            document.dispatchEvent(that.onLoaded);
+        }
+    };
+
+    this.changeHandler = function(changes, namespace) {
+        var changed = false;
+        for (var key in changes) {
+            if (that.values[key]) {
+                that.values[key] = changes[key].newValue;
+                changed = true;
+            }
+        }
+        if (changed) {
+            document.dispatchEvent(that.onLoaded);
+        }
+    };
+
+    this.init = function() {
+        that.onLoaded.initEvent('onLoaded', true, true);
+        that.values.warningPercentage = null;
+        that.values.warningDays = null;
+    };
+
+    this.load = function() {
+        that.init();
+        chrome.storage.sync.get({
+            'warningPercentage': 75
+        }, function(result) {
+            that.values.warningPercentage = result.warningPercentage;
+            that.checkReady();
+        });
+
+        chrome.storage.sync.get({
+            'warningDays': 7
+        }, function(result) {
+            that.values.warningDays = result.warningDays;
+            that.checkReady();
+        });
+    };
+}
 
 /* RealDebrid */
 function RealDebrid(warningPercentage, warningDays) {
@@ -57,6 +126,7 @@ function RealDebrid(warningPercentage, warningDays) {
         warnings: []
     }, function(result) {
         that.warnings = result.warnings;
+        that.checkAccount();
     });
 
     this.selectionHandler = function(selection) {

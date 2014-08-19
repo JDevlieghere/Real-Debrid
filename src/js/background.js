@@ -232,7 +232,11 @@ function Installer() {
     var that = this;
 
     this.onInstall = function(currVersion) {
-        nf.info("Extension installed");
+        chrome.tabs.create({
+            url: "html/options.html"
+        }, function() {
+            nf.info("Extension installed");
+        });
     };
 
     this.onUpdate = function(prevVersion, currVersion) {

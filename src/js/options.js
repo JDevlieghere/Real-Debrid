@@ -1,9 +1,13 @@
 $(document).ready(function() {
-    chrome.storage.sync.get('warningPercentage', function(result) {
+    chrome.storage.sync.get({
+        'warningPercentage': 75
+    }, function(result) {
         $("input#warningPercentage").val(result.warningPercentage);
     });
 
-    chrome.storage.sync.get('warningDays', function(result) {
+    chrome.storage.sync.get({
+        'warningDays': 7
+    }, function(result) {
         $("input#warningDays").val(result.warningDays);
     });
 });
@@ -19,5 +23,13 @@ $("button#save").click(function() {
         'warningDays': warningDays
     });
 
-    alert("Options saved!");
+    success();
 });
+
+function success() {
+    var header = $('div#contentarea div.header');
+    header.addClass("success-animation");
+    header.on('webkitAnimationEnd', function() {
+        header.removeClass("success-animation");
+    });
+}

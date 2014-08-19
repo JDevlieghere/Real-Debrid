@@ -1,10 +1,5 @@
 $content-area-color: #F5F5F5;
 
-
-
-
-
-
 #contentarea{
 
     background-color: $content-area-color;
@@ -14,6 +9,9 @@ $content-area-color: #F5F5F5;
     top:0;
     bottom: 0;
 
+
+
+
     .header{
 
         background-color: white;
@@ -21,9 +19,8 @@ $content-area-color: #F5F5F5;
         display: flex;
         justify-content: space-between;
         @media (max-width: 600px) {
-                display: block;
-            }
-        
+            display: block;
+        }
 
         h1{
             margin: 0;
@@ -46,7 +43,7 @@ $content-area-color: #F5F5F5;
             font-size: 1em;
             font-weight: bold;
             border-radius: 4px;
-            
+
             @media (max-width: 600px) {
                 margin-left: 5px;
                 margin-top: 25px;

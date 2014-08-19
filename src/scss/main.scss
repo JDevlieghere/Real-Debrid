@@ -1,0 +1,49 @@
+$background-color: #FFF;
+$font-color: #444;
+$font-size: 16px;
+$font-stack: sans-serif;
+
+$label-width: 200px;
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: $background-color;
+    font-size: $font-size;
+    color: $font-color;
+    font-family: $font-stack;
+}
+
+ul {
+	margin: 10px;
+	list-style-type: disc;
+	list-style-position: inside;
+}
+
+li {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+ol {
+	list-style-type: decimal;
+	list-style-position: inside;
+}
+
+ul ul, ol ul {
+	list-style-type: circle;
+	list-style-position: inside;
+	margin-left: 15px;
+}
+ol ol, ul ol {
+	list-style-type: lower-latin;
+	list-style-position: inside;
+	margin-left: 15px;
+}
+@import "_animation.scss";
+@import "_typography.scss";
+@import "_sidebar.scss";
+@import "_contentarea.scss";

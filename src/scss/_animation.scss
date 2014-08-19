@@ -1,0 +1,123 @@
+@mixin keyframe ($animation_name) {
+    @-webkit-keyframes $animation_name {
+        @content;
+    }
+
+    @-moz-keyframes $animation_name {
+        @content;
+    }
+
+    @-o-keyframes $animation_name {
+        @content;
+    }
+
+    @keyframes $animation_name {
+        @content;
+    }
+}
+
+@mixin animation ($delay, $duration, $animation) {
+    -webkit-animation-delay: $delay;
+    -webkit-animation-duration: $duration;
+    -webkit-animation-name: $animation;
+    -webkit-animation-fill-mode: forwards;
+
+    -moz-animation-delay: $delay;
+    -moz-animation-duration: $duration;
+    -moz-animation-name: $animation;
+    -moz-animation-fill-mode: forwards;
+
+    animation-delay: $delay;
+    animation-duration: $duration;
+    animation-name: $animation;
+    animation-fill-mode: forwards;
+}
+
+@include keyframe(success) {
+    0% {
+        background: #5cb85c;
+    }
+
+    100% {
+        background: white;
+    }
+}
+
+@include keyframe(failure) {
+    0% {
+        background: #d9534f;
+    }
+
+    100% {
+        background: white;
+    }
+}
+
+.success-animation {
+    @include animation(0s, 1s, 'success');
+}
+
+.failure-animation {
+    @include animation(0s, 1s, 'failure');
+}@mixin keyframe ($animation_name) {
+    @-webkit-keyframes $animation_name {
+        @content;
+    }
+
+    @-moz-keyframes $animation_name {
+        @content;
+    }
+
+    @-o-keyframes $animation_name {
+        @content;
+    }
+
+    @keyframes $animation_name {
+        @content;
+    }
+}
+
+@mixin animation ($delay, $duration, $animation) {
+    -webkit-animation-delay: $delay;
+    -webkit-animation-duration: $duration;
+    -webkit-animation-name: $animation;
+    -webkit-animation-fill-mode: forwards;
+
+    -moz-animation-delay: $delay;
+    -moz-animation-duration: $duration;
+    -moz-animation-name: $animation;
+    -moz-animation-fill-mode: forwards;
+
+    animation-delay: $delay;
+    animation-duration: $duration;
+    animation-name: $animation;
+    animation-fill-mode: forwards;
+}
+
+@include keyframe(success) {
+    0% {
+        background: #5cb85c;
+    }
+
+    100% {
+        background: white;
+    }
+}
+
+@include keyframe(failure) {
+    0% {
+        background: #d9534f;
+    }
+
+    100% {
+        background: white;
+    }
+}
+
+.success-animation {
+    @include animation(0s, 1s, 'success');
+}
+
+.failure-animation {
+    @include animation(0s, 1s, 'failure');
+}

@@ -1,0 +1,66 @@
+$sidebar-color: #428bca;
+$sidebar-width: 250px;
+$logo: url("../img/logo.png");
+
+#sidebar{
+    background-color: $sidebar-color;
+    width: $sidebar-width;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    box-shadow: inset -5px 0px 5px 0px rgba(0,0,0,0.2);
+
+    .brand{
+        background-color: darken($sidebar-color, 10%);
+        //background-color: rgba(0,0,0,0.2);
+        padding: 15px;
+        color: white;
+        text-shadow: 0 0 5px  darken($sidebar-color,50%);
+
+        h1{
+            margin: 0;
+            padding :0;
+            padding :0;
+        }
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        color: white;
+        font-size: 0.8em;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    ol{
+        display: flex;
+        flex-direction: column;
+        color: lighten($sidebar-color,35%);
+
+        li{
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid darken($sidebar-color, 2%);
+
+            a{
+                flex: 1;
+                color: lighten($sidebar-color,35%);
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .fa{
+                position: relative;
+                top: 2px;
+                color: darken($sidebar-color,15%);
+            }
+
+
+        }
+    }
+
+}

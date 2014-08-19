@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Real-Debrid Extension</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../libs/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../libs/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+
+    <script src="/libs/js/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="sidebar">
+        <div class="brand">
+            <h1>Real Debrid</h1>
+        </div>
+        <ol>
+            <li><a href="#">Options</a><i class="fa fa-cog"></i>
+            </li>
+        </ol>
+        <div class="footer">Real-Debrid Extension v<span id="version"></span>
+        </div>
+    </div>
+    <div id="contentarea">
+        <div class="header">
+            <h1>Options</h1>
+            <button id="save" name="save">Save</button>
+        </div>
+        <div class="row">
+            <div class="contentbox">
+                <div class="flex-column">
+                    <section>
+                        <h3>Warnings</h3>
+                    </section>
+                    <hr>
+                    <section>
+                        <form class="form-inline">
+                            <div class="fomgroup">
+                                <label for="warningPercentage">Limited hoster usage (%)</label>
+                                <input id="warningPercentage" name="warningPercentage" type="number" class="form-control" />
+                            </div>
+                            <div class="fomgroup">
+                                <label for="warningDays">Premium expiration (days)</label>
+                                <input id="warningDays" name="warningDays" type="number" class="form-control" />
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+            <div class="contentbox">
+                <div class="flex-column">
+                    <section>
+                        <h3>About</h3>
+                    </section>
+                    <hr>
+                    <section>
+                        <ul>
+                            <li><a href="https://chrome.google.com/webstore/detail/real-debrid/llhbijccmpenbpkblhmeeneeaangebej">Real-Debrid Extension in the Chrome Web Store</a>
+                            </li>
+                            <li><a href="https://github.com/JDevlieghere/Real-Debrid">Source Code on GitHub</a>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/options.js"></script>
+</body>

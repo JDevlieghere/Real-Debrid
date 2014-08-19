@@ -1,3 +1,15 @@
+## 1.6.x
+
+Features:
+
+ - Options page
+ - Configurable warnigs
+
+Bugfixes:
+ 
+ - New installer code using chrome API
+ - Typo fixed (Thanks to Nele)
+ 
 ## 1.5.x
 
 Features:

@@ -17,13 +17,14 @@ limitations under the License.
 var is = new Installer();
 var dm = new DownloadManager();
 var nf = new Notifier();
-var rd = new RealDebrid();
+var op = new Options();
+var rd;
 
-$(document).ready(function() {
-    // Run Installer
-    is.run();
+// Register Options Handler
+op.addListener(function() {
 
-    // Add to Context Menu
+    rd = new RealDebrid(op.values.warningPercentage, op.values.warningDays);
+
     chrome.contextMenus.create({
         "title": "Download with Real-Debrid",
         "contexts": ["page", "link", "selection"],
@@ -38,20 +39,86 @@ $(document).ready(function() {
         }
     });
 
-    // Register Handlers
-    chrome.downloads.onChanged.addListener(dm.changeHandler);
-    chrome.notifications.onClicked.addListener(nf.clickHandler);
-
-    // Check Account
-    rd.checkAccount();
 });
 
+// Load Options
+op.load();
+
+// Register Chrome Handlers
+chrome.downloads.onChanged.addListener(dm.changeHandler);
+chrome.notifications.onClicked.addListener(nf.clickHandler);
+chrome.runtime.onInstalled.addListener(is.installHandler);
+chrome.storage.onChanged.addListener(op.changeHandler);
+
+
+function Options() {
+
+    this.values = {};
+    this.onLoaded = document.createEvent('Event');
+
+    var that = this;
+
+    this.addListener = function(handler) {
+        document.addEventListener('onLoaded', handler, false);
+    };
+
+    this.isReady = function() {
+        var ready = true;
+        for (var key in that.values) {
+            ready = ready && that.values[key];
+        }
+        return ready;
+    };
+
+    this.checkReady = function() {
+        if (that.isReady()) {
+            document.dispatchEvent(that.onLoaded);
+        }
+    };
+
+    this.changeHandler = function(changes, namespace) {
+        var changed = false;
+        for (var key in changes) {
+            if (that.values[key]) {
+                that.values[key] = changes[key].newValue;
+                changed = true;
+            }
+        }
+        if (changed) {
+            document.dispatchEvent(that.onLoaded);
+        }
+    };
+
+    this.init = function() {
+        that.onLoaded.initEvent('onLoaded', true, true);
+        that.values.warningPercentage = null;
+        that.values.warningDays = null;
+    };
+
+    this.load = function() {
+        that.init();
+        chrome.storage.sync.get({
+            'warningPercentage': 75
+        }, function(result) {
+            that.values.warningPercentage = result.warningPercentage;
+            that.checkReady();
+        });
+
+        chrome.storage.sync.get({
+            'warningDays': 7
+        }, function(result) {
+            that.values.warningDays = result.warningDays;
+            that.checkReady();
+        });
+    };
+}
+
 /* RealDebrid */
-function RealDebrid() {
+function RealDebrid(warningPercentage, warningDays) {
 
     this.warnings = [];
-    this.warningPercentage = 75;
-    this.warningDays = 7;
+    this.warningPercentage = warningPercentage;
+    this.warningDays = warningDays;
 
     var that = this;
 
@@ -59,6 +126,7 @@ function RealDebrid() {
         warnings: []
     }, function(result) {
         that.warnings = result.warnings;
+        that.checkAccount();
     });
 
     this.selectionHandler = function(selection) {
@@ -124,7 +192,11 @@ function RealDebrid() {
         var total = hoster.limit + hoster.additional_traffic;
         var used = (hoster.downloaded / total) * 100;
         if (used >= that.warningPercentage && index === -1) {
-            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used);
+            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", function() {
+                chrome.tabs.create({
+                    url: 'html/options.html'
+                }, function() {});
+            });
             that.storeWarning(hoster.name);
         } else if (used < that.percentage && index !== -1) {
             that.removeWarning(index, 1);
@@ -136,7 +208,11 @@ function RealDebrid() {
         var daysLeft = Math.round(data[key] / (-1 * 24 * 60 * 60));
         var index = that.warnings.indexOf(key);
         if (daysLeft <= that.warningDays && index === -1) {
-            nf.info("You have only " + daysLeft + " days left of premium.");
+            nf.info("You have only " + daysLeft + " days left of premium. Click here to change warnings preferences.", function() {
+                chrome.tabs.create({
+                    url: 'html/options.html'
+                }, function() {});
+            });
             that.storeWarning(key);
         } else if (daysLeft > that.warningDays && index !== -1) {
             that.removeWarning(key);
@@ -204,13 +280,13 @@ function Notifier() {
             message: text,
             priority: 1,
             progress: progress
-        }
+        };
         chrome.notifications.create("id_" + id, options, function(notificationId) {
             if (onClicked) {
                 that.callbacks[notificationId] = onClicked;
             }
         });
-    }
+    };
 
     this.error = function(text, callback) {
         that.basic("Error", text, callback);
@@ -234,7 +310,11 @@ function Installer() {
     var that = this;
 
     this.onInstall = function(currVersion) {
-        nf.info("Extension installed");
+        chrome.tabs.create({
+            url: "html/options.html"
+        }, function() {
+            nf.info("Extension installed");
+        });
     };
 
     this.onUpdate = function(prevVersion, currVersion) {
@@ -252,23 +332,15 @@ function Installer() {
         }
     };
 
-    this.getVersion = function() {
-        var details = chrome.app.getDetails();
-        return details.version;
-    };
-
-    this.run = function() {
-        var currVersion = that.getVersion();
-        var prevVersion = localStorage['version'];
-        if (currVersion != prevVersion) {
-            if (typeof prevVersion == 'undefined') {
-                that.onInstall(currVersion);
-            } else {
-                that.onUpdate(prevVersion, currVersion);
-            }
-            localStorage['version'] = currVersion;
+    this.installHandler = function(details) {
+        var currVersion = chrome.runtime.getManifest().version;
+        if (details.reason == "install") {
+            that.onInstall(currVersion);
+        } else if (details.reason == "update") {
+            that.onUpdate(details.previousVersion, currVersion);
         }
     };
+
 }
 
 /* Download Manager */
@@ -287,12 +359,8 @@ function DownloadManager() {
 
     this.checkComplete = function() {
         if (that.active.length === 0) {
-            nf.info("All download complete");
+            nf.info("All downloads complete");
         }
-    };
-
-    this.addToQueue = function(id) {
-        queue.push(id)
     };
 
     this.addToActive = function(id) {

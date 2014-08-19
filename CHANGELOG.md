@@ -3,13 +3,13 @@
 Features:
 
  - Options page
- - Configurable warnigs
+ - Configurable warnings
 
 Bugfixes:
- 
+
  - New installer code using chrome API
  - Typo fixed (Thanks to Nele)
- 
+
 ## 1.5.x
 
 Features:

@@ -1,0 +1,71 @@
+@import "_reset.scss";
+
+$background-color: #FFF;
+$font-color: #444;
+$font-size: 16px;
+$font-stack: sans-serif;
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: $background-color;
+    font-size: $font-size;
+    color: $font-color;
+    font-family: $font-stack;
+}
+
+h1 { font-size: 2em; font-weight: bold; }
+h2 { font-size: 1.5em; font-weight: bold; }
+h3 { font-size: 1.17em; font-weight: bold; }
+h5 { font-size: .83em; }
+h6 { font-size: .75em; }
+
+ul {
+	margin: 10px;
+	list-style-type: disc;
+	list-style-position: inside;
+}
+
+li {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+ol {
+	list-style-type: decimal;
+	list-style-position: inside;
+}
+
+ul ul, ol ul {
+	list-style-type: circle;
+	list-style-position: inside;
+	margin-left: 15px;
+}
+ol ol, ul ol {
+	list-style-type: lower-latin;
+	list-style-position: inside;
+	margin-left: 15px;
+}
+
+form{
+	display: flex;
+	flex-flow: row wrap;
+	width: 450px;
+}
+
+label {
+	display: block;
+	width: 200px;
+}
+
+input, textarea {
+	width: 250px;
+	margin-bottom: 7px;
+}
+
+@import "_typography.scss";
+@import "_sidebar.scss";
+@import "_contentarea.scss";

@@ -1,24 +1,64 @@
 <!doctype html>
 <html lang="">
+
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-	<title>Real-Debrid Extension</title>
+    <title>Real-Debrid Extension</title>
 
-	<meta name="description" content="">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link rel="stylesheet" href="/libs/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/main.css">
 
-	<script src="/libs/jquery.min.js"></script>
-	<script src="/libs/bootstrap.min.js"></script>
+    <script src="/libs/js/jquery.min.js"></script>
 </head>
+
 <body>
-	<div class="container">
-		<input id="warningPercentage" name="warningPercentage" type="text" placeholder="" required="">
-		<input id="warningDays" name="warningDays" type="text" placeholder="" required="">
-		<button id="save" name="save" class="btn btn-primary">Save</button>
-	</div>
-	<script src="/js/options.js"></script>
+    <div id="sidebar">
+        <div class="brand">
+            <h1>Real Debrid</h1>
+        </div>
+        <ol>
+            <li><a href="#">Options</a><i class="fa fa-cog"></i></li>
+        </ol>
+    </div>
+    <div id="contentarea">
+        <div class="header">
+            <h1>Options</h1>
+            <button id="save" name="save">Save</button>
+        </div>
+        <div class="row">
+            <div class="contentbox">
+                <div class="flex-column">
+                    <section><h3>Warning Notifications</h3></section>
+                    <hr>
+                    <section>
+                        <form>
+                            <label for="warningPercentage">Warning Percentage</label>
+                            <input id="warningPercentage" name="warningPercentage" type="number" />
+                            <label for="warningDays">Warning Days</label>
+                            <input id="warningDays" name="warningDays" type="number" />
+                        </form>
+                    </section>
+                </div>
+            </div>
+            <div class="contentbox">
+                <div class="flex-column">
+                    <section><h3>About</h3></section>
+                    <hr>
+                    <section>
+                    <ul>
+                        <li><a href="https://chrome.google.com/webstore/detail/real-debrid/llhbijccmpenbpkblhmeeneeaangebej">Real-Debrid Extension in the Chrome Web Store</a></li>
+                        <li><a href="https://github.com/JDevlieghere/Real-Debrid">Source Code on GitHub</a></li>
+                    </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/options.js"></script>
 </body>

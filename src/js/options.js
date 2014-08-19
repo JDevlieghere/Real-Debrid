@@ -19,5 +19,5 @@ $("button#save").click(function() {
         'warningDays': warningDays
     });
 
-    return false;
+    alert("Options saved!");
 });

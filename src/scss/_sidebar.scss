@@ -5,6 +5,7 @@ $logo: url("../img/logo.png");
 #sidebar{
     background-color: $sidebar-color;
     width: $sidebar-width;
+    height: 100%;
     position: absolute;
     top: 0px;
     bottom: 0px;
@@ -23,6 +24,16 @@ $logo: url("../img/logo.png");
             padding :0;
             padding :0;
         }
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        color: white;
+        font-size: 0.8em;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
     }
 
     ol{

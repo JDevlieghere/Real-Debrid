@@ -10,13 +10,16 @@ $(document).ready(function() {
     }, function(result) {
         $("input#warningDays").val(result.warningDays);
     });
+
+    var version = chrome.runtime.getManifest().version;
+    $('#version').html(version);
 });
 
 $("button#save").click(function() {
     var warningPercentage = $("input#warningPercentage").val();
     var warningDays = $("input#warningDays").val();
 
-    if(warningDays && warningPercentage){
+    if (warningDays && warningPercentage) {
         chrome.storage.sync.set({
             'warningPercentage': warningPercentage
         });
@@ -25,7 +28,7 @@ $("button#save").click(function() {
             'warningDays': warningDays
         });
         success();
-    }else{
+    } else {
         failure();
     }
 });

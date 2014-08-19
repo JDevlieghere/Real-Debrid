@@ -5,6 +5,8 @@ $font-color: #444;
 $font-size: 16px;
 $font-stack: sans-serif;
 
+$label-width: 200px;
+
 * {
     margin: 0;
     padding: 0;
@@ -62,7 +64,7 @@ label {
 }
 
 input, textarea {
-	width: 250px;
+	width: calc(100% - 200px);
 	margin-bottom: 7px;
 }
 

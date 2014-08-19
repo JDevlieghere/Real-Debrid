@@ -1,6 +1,10 @@
 $content-area-color: #F5F5F5;
 
 
+
+
+
+
 #contentarea{
 
     background-color: $content-area-color;
@@ -16,12 +20,19 @@ $content-area-color: #F5F5F5;
         padding: 15px;
         display: flex;
         justify-content: space-between;
+        @media (max-width: 600px) {
+                display: block;
+            }
+        
 
         h1{
             margin: 0;
             padding :0;
             padding :0;
             flex: 1;
+            @media (max-width: 600px) {
+                width: 100%;
+            }
         }
 
         button {
@@ -35,6 +46,14 @@ $content-area-color: #F5F5F5;
             font-size: 1em;
             font-weight: bold;
             border-radius: 4px;
+            
+            @media (max-width: 600px) {
+                margin-left: 5px;
+                margin-top: 25px;
+                display: block;
+                height: 2em;
+                width: 100%;
+            }
         }
 
         button:hover{
@@ -62,7 +81,7 @@ $content-area-color: #F5F5F5;
             flex: 1 0 500px;
             background-color: white;
             border-bottom: 3px solid darken($content-area-color, 7%);
-            border-radius: 4px;
+            border-radius: 5px;
             align-items: center;
         }
     }

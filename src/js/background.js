@@ -22,23 +22,7 @@ var rd;
 
 // Register Options Handler
 op.addListener(function() {
-
     rd = new RealDebrid(op.values.warningPercentage, op.values.warningDays);
-
-    chrome.contextMenus.create({
-        "title": "Download with Real-Debrid",
-        "contexts": ["page", "link", "selection"],
-        "onclick": function(info) {
-            if (typeof info.selectionText !== "undefined") {
-                rd.selectionHandler(info.selectionText);
-            } else if (typeof info.linkUrl !== "undefined") {
-                rd.urlHandler(info.linkUrl);
-            } else {
-                rd.urlHandler(info.pageUrl);
-            }
-        }
-    });
-
 });
 
 // Load Options
@@ -49,6 +33,21 @@ chrome.downloads.onChanged.addListener(dm.changeHandler);
 chrome.notifications.onClicked.addListener(nf.clickHandler);
 chrome.runtime.onInstalled.addListener(is.installHandler);
 chrome.storage.onChanged.addListener(op.changeHandler);
+
+// Create Context Menu
+chrome.contextMenus.create({
+    "title": "Download with Real-Debrid",
+    "contexts": ["page", "link", "selection"],
+    "onclick": function(info) {
+        if (typeof info.selectionText !== "undefined") {
+            rd.selectionHandler(info.selectionText);
+        } else if (typeof info.linkUrl !== "undefined") {
+            rd.urlHandler(info.linkUrl);
+        } else {
+            rd.urlHandler(info.pageUrl);
+        }
+    }
+});
 
 
 function Options() {

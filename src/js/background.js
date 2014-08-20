@@ -22,24 +22,100 @@ var rd;
 
 // Register Options Handler
 op.addListener(function() {
-
     rd = new RealDebrid(op.values.warningPercentage, op.values.warningDays);
+});
 
-    chrome.contextMenus.create({
-        "title": "Download with Real-Debrid",
-        "contexts": ["page", "link", "selection"],
-        "onclick": function(info) {
-            if (typeof info.selectionText !== "undefined") {
-                rd.selectionHandler(info.selectionText);
-            } else if (typeof info.linkUrl !== "undefined") {
-                rd.urlHandler(info.linkUrl);
-            } else {
-                rd.urlHandler(info.pageUrl);
+// Load Options
+op.load();
+
+// Register Chrome Handlers
+chrome.downloads.onChanged.addListener(dm.changeHandler);
+chrome.notifications.onClicked.addListener(nf.clickHandler);
+chrome.runtime.onInstalled.addListener(is.installHandler);
+chrome.storage.onChanged.addListener(op.changeHandler);
+
+// Create Context Menu
+chrome.contextMenus.create({
+    "title": "Download with Real-Debrid",
+    "contexts": ["page", "link", "selection"],
+    "onclick": function(info) {
+        if (typeof info.selectionText !== "undefined") {
+            rd.selectionHandler(info.selectionText);
+        } else if (typeof info.linkUrl !== "undefined") {
+            rd.urlHandler(info.linkUrl);
+        } else {
+            rd.urlHandler(info.pageUrl);
+        }
+    }
+});
+
+
+function Options() {
+
+    this.values = {};
+    this.onLoaded = document.createEvent('Event');
+
+    var that = this;
+
+    this.addListener = function(handler) {
+        document.addEventListener('onLoaded', handler, false);
+    };
+
+    this.isReady = function() {
+        var ready = true;
+        for (var key in that.values) {
+            ready = ready && that.values[key];
+        }
+        return ready;
+    };
+
+    this.checkReady = function() {
+        if (that.isReady()) {
+            document.dispatchEvent(that.onLoaded);
+        }
+    };
+
+    this.changeHandler = function(changes, namespace) {
+        var changed = false;
+        for (var key in changes) {
+            if (that.values[key]) {
+                that.values[key] = changes[key].newValue;
+                changed = true;
+>>>>>>> develop:src/js/background.js
             }
         }
-    });
+        if (changed) {
+            document.dispatchEvent(that.onLoaded);
+        }
+    };
 
+<<<<<<< HEAD:src/js/background.js
 });
+=======
+    this.init = function() {
+        that.onLoaded.initEvent('onLoaded', true, true);
+        that.values.warningPercentage = null;
+        that.values.warningDays = null;
+    };
+
+    this.load = function() {
+        that.init();
+        chrome.storage.sync.get({
+            'warningPercentage': 75
+        }, function(result) {
+            that.values.warningPercentage = result.warningPercentage;
+            that.checkReady();
+        });
+
+        chrome.storage.sync.get({
+            'warningDays': 7
+        }, function(result) {
+            that.values.warningDays = result.warningDays;
+            that.checkReady();
+        });
+    };
+}
+>>>>>>> develop:src/js/background.js
 
 // Load Options
 op.load();

@@ -6,10 +6,11 @@ Features:
  - Configurable warnings
 
 Bugfixes:
- 
+
  - New installer code using chrome API
  - Typo fixed (Thanks to Nele)
- 
+ - Multiple instances of context menu fixed
+
 ## 1.5.x
 
 Features:

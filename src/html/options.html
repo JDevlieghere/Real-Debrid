@@ -23,9 +23,12 @@
             <h1>Real Debrid</h1>
         </div>
         <ol>
-            <li><a href="#options">Options</a><i class="fa fa-cog"></i> </li>
-            <li><a href="#account">Account Info</a><i class="fa fa-user"></i> </li>
-            <li><a href="#recent">Latest Downloads</a><i class="fa fa-list"></i> </li>
+            <li><a href="#options">Options</a><i class="fa fa-cog"></i> 
+            </li>
+            <li><a href="#account">Account Info</a><i class="fa fa-user"></i> 
+            </li>
+            <li><a href="#recent">Latest Downloads</a><i class="fa fa-list"></i> 
+            </li>
         </ol>
         <div class="footer">Real-Debrid Extension v<span id="version"></span>
         </div>
@@ -36,41 +39,37 @@
             <button id="save" name="save">Save</button>
         </div>
         <div class="row">
-            <div class="contentbox" >
-                <div class="flex-column">
-                    <section>
-                        <h3>Warnings</h3>
-                    </section>
-                    <hr>
-                    <section>
-                        <form class="form-inline">
-                            <div class="fomgroup">
-                                <label for="warningPercentage">Limited hoster usage (%)</label>
-                                <input id="warningPercentage" name="warningPercentage" type="number" class="form-control" />
-                            </div>
-                            <div class="fomgroup">
-                                <label for="warningDays">Premium expiration (days)</label>
-                                <input id="warningDays" name="warningDays" type="number" class="form-control" />
-                            </div>
-                        </form>
-                    </section>
-                </div>
+            <div class="contentbox">
+                <section>
+                    <h3>Warnings</h3>
+                </section>
+                <hr>
+                <section>
+                    <form class="form-inline">
+                        <div class="fomgroup">
+                            <label for="warningPercentage">Limited hoster usage (%)</label>
+                            <input id="warningPercentage" name="warningPercentage" type="number" class="form-control" />
+                        </div>
+                        <div class="fomgroup">
+                            <label for="warningDays">Premium expiration (days)</label>
+                            <input id="warningDays" name="warningDays" type="number" class="form-control" />
+                        </div>
+                    </form>
+                </section>
             </div>
             <div class="contentbox">
-                <div class="flex-column">
-                    <section>
-                        <h3>About</h3>
-                    </section>
-                    <hr>
-                    <section>
-                        <ul>
-                            <li><a href="https://chrome.google.com/webstore/detail/real-debrid/llhbijccmpenbpkblhmeeneeaangebej">Real-Debrid Extension in the Chrome Web Store</a>
-                            </li>
-                            <li><a href="https://github.com/JDevlieghere/Real-Debrid">Source Code on GitHub</a>
-                            </li>
-                        </ul>
-                    </section>
-                </div>
+                <section>
+                    <h3>About</h3>
+                </section>
+                <hr>
+                <section>
+                    <ul>
+                        <li><a href="https://chrome.google.com/webstore/detail/real-debrid/llhbijccmpenbpkblhmeeneeaangebej">Real-Debrid Extension in the Chrome Web Store</a>
+                        </li>
+                        <li><a href="https://github.com/JDevlieghere/Real-Debrid">Source Code on GitHub</a>
+                        </li>
+                    </ul>
+                </section>
             </div>
         </div>
         <div class="row" id="account">
@@ -79,6 +78,32 @@
                     <h3>Account Info</h3>
                 </section>
                 <hr>
+                <section>
+                    <div class="row">
+                        <div class="key">Username</div>
+                        <div class="value" id="username"></div>
+                    </div>
+                    <div class="row">
+                        <div class="key">E-mail</div>
+                        <div class="value" id="email"></div>
+                    </div>
+                    <div class="row">
+                        <div class="key">Points</div>
+                        <div class="value" id="points"></div>
+                    </div>
+                    <div class="row">
+                        <div class="key">Expiration</div>
+                        <div class="value" id="expiration"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="contentbox">
+                <section>
+                    <h3>Limited Hosters</h3>
+                </section>
+                <hr>
+                <section id="hosters">
+                </section>
             </div>
         </div>
         <div class="row" id="recent">

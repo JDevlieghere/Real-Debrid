@@ -1,3 +1,10 @@
+## 1.7.x
+
+Features:
+
+ - Recent downloads card
+ - Account information card
+
 ## 1.6.x
 
 Features:

@@ -13,6 +13,8 @@ $(document).ready(function() {
 
     var version = chrome.runtime.getManifest().version;
     $('#version').html(version);
+
+    getDownloads();
 });
 
 $("button#save").click(function() {
@@ -46,5 +48,36 @@ function failure() {
     header.addClass("failure-animation");
     header.on('webkitAnimationEnd', function() {
         header.removeClass("failure-animation");
+    });
+}
+
+function getDownloads() {
+    var url = "https://real-debrid.com/api/downloads.php?out=json";
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: 'json',
+        data: {},
+        crossDomain: true,
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function(data) {
+            var downloads = data.downloads;
+            var html = "";
+            for (var i = 0; i < downloads.length; i++) {
+                html += '<tr>';
+                html += '<td><img src="' + downloads[i].hoster_image + '" //></td>';
+                html += '<td>' + downloads[i].name + '</td>';
+                html += '<td>' + downloads[i].generated_date + '</td>';
+                html += '<td><a href="' + downloads[i].original + '" target="_blank">Link</a></td>';
+                html += '<td><a href="' + downloads[i].link + '" target="_blank">Link</a></td>';
+                html += '</tr>';
+            }
+            $('#downloads tbody').append(html);
+        },
+        error: function() {
+            console.log("Could not reach real-debrid.com");
+        }
     });
 }

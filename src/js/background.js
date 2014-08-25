@@ -196,14 +196,10 @@ function RealDebrid(warningPercentage, warningDays) {
 
     this.checkHoster = function(hoster) {
         var index = that.warnings.indexOf(hoster.name);
-        var total = hoster.limit + hoster.additional_traffic;
-        var used = (hoster.downloaded / total) * 100;
+        var total = parseFloat(hoster.limit) + parseFloat(hoster.additional_traffic);
+        var used = Math.round((parseFloat(hoster.downloaded) / total) * 100);
         if (used >= that.warningPercentage && index === -1) {
-            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", function() {
-                chrome.tabs.create({
-                    url: 'html/options.html'
-                }, function() {});
-            });
+            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used, nf.openOptions);
             that.storeWarning(hoster.name);
         } else if (used < that.percentage && index !== -1) {
             that.removeWarning(index, 1);
@@ -215,11 +211,7 @@ function RealDebrid(warningPercentage, warningDays) {
         var daysLeft = Math.round(data[key] / (-1 * 24 * 60 * 60));
         var index = that.warnings.indexOf(key);
         if (daysLeft <= that.warningDays && index === -1) {
-            nf.info("You have only " + daysLeft + " days left of premium. Click here to change warnings preferences.", function() {
-                chrome.tabs.create({
-                    url: 'html/options.html'
-                }, function() {});
-            });
+            nf.info("You have only " + daysLeft + " days left of premium. Click here to change warnings preferences.", nf.openOptions);
             that.storeWarning(key);
         } else if (daysLeft > that.warningDays && index !== -1) {
             that.removeWarning(key);
@@ -309,6 +301,12 @@ function Notifier() {
             delete that.callbacks[notificationId];
         }
     };
+
+    this.openOptions = function() {
+        chrome.tabs.create({
+            url: 'html/options.html'
+        }, function() {});
+    };
 }
 
 /* Installer */
@@ -366,7 +364,7 @@ function DownloadManager() {
 
     this.checkComplete = function() {
         if (that.active.length === 0) {
-            nf.info("All downloads complete");
+            nf.info("All downloads complete", nf.openOptions);
         }
     };
 

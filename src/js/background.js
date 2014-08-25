@@ -30,7 +30,6 @@ op.load();
 
 // Register Chrome Listeners
 chrome.runtime.onInstalled.addListener(is.installHandler);
-chrome.runtime.onUpdateAvailable.addListener(is.updateHandler);
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.url) {
         rd.urlHandler(request.url);
@@ -317,9 +316,12 @@ function Notifier() {
 }
 
 /* Installer */
+/* Installer */
 function Installer() {
 
-    this.installHandler = function(currVersion) {
+    var that = this;
+
+    this.onInstall = function(currVersion) {
         chrome.tabs.create({
             url: "html/options.html"
         }, function() {
@@ -327,7 +329,7 @@ function Installer() {
         });
     };
 
-    this.updateHandler = function(prevVersion, currVersion) {
+    this.onUpdate = function(prevVersion, currVersion) {
         var prevVersionDigits = prevVersion.split('.');
         var currVersionDigits = currVersion.split('.');
         if (prevVersionDigits.length >= 2 && currVersionDigits.length >= 2 && prevVersionDigits[0] == currVersionDigits[0] && prevVersionDigits[1] == currVersionDigits[1]) {
@@ -340,7 +342,15 @@ function Installer() {
                 }, function() {});
             });
         }
-        chrome.runtime.reload();
+    };
+
+    this.installHandler = function(details) {
+        var currVersion = chrome.runtime.getManifest().version;
+        if (details.reason == "install") {
+            that.onInstall(currVersion);
+        } else if (details.reason == "update") {
+            that.onUpdate(details.previousVersion, currVersion);
+        }
     };
 }
 

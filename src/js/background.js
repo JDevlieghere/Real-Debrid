@@ -299,11 +299,17 @@ function Notifier() {
 
     this.openOptions = function() {
         var optionsUrl = chrome.extension.getURL('html/options.html');
-        chrome.tabs.query({url: optionsUrl}, function(tabs) {
+        chrome.tabs.query({
+            url: optionsUrl
+        }, function(tabs) {
             if (tabs.length) {
-                chrome.tabs.update(tabs[0].id, {active: true});
+                chrome.tabs.update(tabs[0].id, {
+                    active: true
+                });
             } else {
-                chrome.tabs.create({url: optionsUrl });
+                chrome.tabs.create({
+                    url: optionsUrl
+                });
             }
             window.close();
         });

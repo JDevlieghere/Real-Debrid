@@ -3,7 +3,7 @@
   "name": "Real-Debrid Extension",
   "short_name": "Real-Debrid",
   "description": "Real-Debrid Google Chrome Extension (Plugin)",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "icons" : {
     "16" : "icons/icon-16.png",
     "64" : "icons/icon-64.png",

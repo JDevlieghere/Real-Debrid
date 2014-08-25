@@ -7,6 +7,10 @@ Features:
  - Limited hosters card
  - Page action added to supported hosters (icon in URL bar)
 
+Bugfixes:
+
+ - Used percentages fixed
+
 ## 1.6.x
 
 Features:

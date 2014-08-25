@@ -102,8 +102,8 @@ function getAccount() {
             var limited = data.limited;
             for (var i = 0; i < limited.length; i++) {
                 var hoster = limited[i];
-                var total = hoster.limit + hoster.additional_traffic;
-                var used = Math.round((hoster.downloaded / total) * 100);
+                var total = parseFloat(hoster.limit) + parseFloat(hoster.additional_traffic);
+                var used = Math.round((parseFloat(hoster.downloaded) / total) * 100);
                 html += '<div class="row">';
                 html += '<div class="key"><img src="' + hoster.image + '" class="emblem" //> ' + hoster.name + '</div>';
                 html += '<div class="value">';

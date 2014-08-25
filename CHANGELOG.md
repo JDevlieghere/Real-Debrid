@@ -5,11 +5,12 @@ Features:
  - Recent downloads card
  - Account information card
  - Limited hosters card
- - Page action added to supported hosters (icon in URL bar)
+ - Browser icon added (upper right corner)
 
 Bugfixes:
 
  - Used percentages fixed
+ - Multiple instances of the options page fixed
 
 ## 1.6.x
 

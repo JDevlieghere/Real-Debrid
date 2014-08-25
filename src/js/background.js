@@ -28,10 +28,16 @@ op.addListener(function() {
 // Load Options
 op.load();
 
-// Register Chrome Handlers
+// Register Chrome Listeners
+chrome.runtime.onInstalled.addListener(is.installHandler);
+chrome.runtime.onUpdateAvailable.addListener(is.updateHandler);
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.url) {
+        rd.urlHandler(request.url);
+    }
+});
 chrome.downloads.onChanged.addListener(dm.changeHandler);
 chrome.notifications.onClicked.addListener(nf.clickHandler);
-chrome.runtime.onInstalled.addListener(is.installHandler);
 chrome.storage.onChanged.addListener(op.changeHandler);
 
 // Create Context Menu
@@ -46,14 +52,6 @@ chrome.contextMenus.create({
         }
     }
 });
-
-// Add Message Listener
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.url) {
-        rd.urlHandler(request.url);
-    }
-});
-
 
 function Options() {
 
@@ -300,18 +298,22 @@ function Notifier() {
     };
 
     this.openOptions = function() {
-        chrome.tabs.create({
-            url: 'html/options.html'
-        }, function() {});
+        var optionsUrl = chrome.extension.getURL('html/options.html');
+        chrome.tabs.query({url: optionsUrl}, function(tabs) {
+            if (tabs.length) {
+                chrome.tabs.update(tabs[0].id, {active: true});
+            } else {
+                chrome.tabs.create({url: optionsUrl });
+            }
+            window.close();
+        });
     };
 }
 
 /* Installer */
 function Installer() {
 
-    var that = this;
-
-    this.onInstall = function(currVersion) {
+    this.installHandler = function(currVersion) {
         chrome.tabs.create({
             url: "html/options.html"
         }, function() {
@@ -319,7 +321,7 @@ function Installer() {
         });
     };
 
-    this.onUpdate = function(prevVersion, currVersion) {
+    this.updateHandler = function(prevVersion, currVersion) {
         var prevVersionDigits = prevVersion.split('.');
         var currVersionDigits = currVersion.split('.');
         if (prevVersionDigits.length >= 2 && currVersionDigits.length >= 2 && prevVersionDigits[0] == currVersionDigits[0] && prevVersionDigits[1] == currVersionDigits[1]) {
@@ -332,17 +334,8 @@ function Installer() {
                 }, function() {});
             });
         }
+        chrome.runtime.reload();
     };
-
-    this.installHandler = function(details) {
-        var currVersion = chrome.runtime.getManifest().version;
-        if (details.reason == "install") {
-            that.onInstall(currVersion);
-        } else if (details.reason == "update") {
-            that.onUpdate(details.previousVersion, currVersion);
-        }
-    };
-
 }
 
 /* Download Manager */

@@ -1,10 +1,15 @@
 $(function() {
     $('a[href*=#]:not([href=#])').click(function() {
-        chrome.tabs.create({
-            url: 'html/options.html' + this.hash
-        }, function() {
+		var optionsUrl = chrome.extension.getURL('html/options.html');
+		var fullUrl = optionsUrl + this.hash;
+		chrome.tabs.query({url: optionsUrl}, function(tabs) {
+		    if (tabs.length) {
+		        chrome.tabs.update(tabs[0].id, {active: true, url: fullUrl});
+		    } else {
+		        chrome.tabs.create({url: fullUrl });
+		    }
             window.close();
-        });
+		});
     });
 });
 

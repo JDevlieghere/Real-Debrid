@@ -53,7 +53,7 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
     chrome.declarativeContent.onPageChanged.addRules(rm.getRules());
 });
 
-// Create Page Actio Listener
+// Create Page Action Listener
 chrome.pageAction.onClicked.addListener(function(tab) {
     rd.urlHandler(tab.url);
 });

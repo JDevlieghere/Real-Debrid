@@ -15,6 +15,7 @@
     "downloads",
     "storage",
     "notifications",
+    "declarativeContent",
     "https://real-debrid.com/"
   ],
   "background": {
@@ -22,6 +23,13 @@
       "/libs/js/jquery.min.js",
       "js/background.js"
     ]
+  },
+  "page_action": {
+    "default_icon": {                  
+      "19": "icons/icon-19.png",          
+      "38": "icons/icon-38.png"            
+    },
+    "default_title": "Real-Debrid"
   },
   "options_page": "html/options.html"
 }

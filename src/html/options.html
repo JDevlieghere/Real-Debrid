@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="../libs/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/main.css">
 
-    <script src="/libs/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/libs/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/libs/js/jquery.scrollTo.min.js"></script>
 </head>
 
 <body>
@@ -80,7 +81,7 @@
                     <h3>Account Info</h3>
                 </section>
                 <hr>
-                <section>
+                <section class="login-required">
                     <div class="row">
                         <div class="key">Username</div>
                         <div class="value" id="username"></div>
@@ -106,7 +107,7 @@
                     <h3>Limited Hosters</h3>
                 </section>
                 <hr>
-                <section id="hosters">
+                <section id="hosters" class="login-required">
                 </section>
             </div>
         </div>
@@ -116,7 +117,7 @@
                     <h3>Latest Downloads</h3>
                 </section>
                 <hr>
-                <section>
+                <section class="login-required">
                     <table class="table table-hover" id="downloads">
                         <thead>
                             <tr>

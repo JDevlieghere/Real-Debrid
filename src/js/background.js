@@ -18,6 +18,7 @@ var is = new Installer();
 var dm = new DownloadManager();
 var nf = new Notifier();
 var op = new Options();
+var rm = new RuleMaker();
 var rd;
 
 // Register Options Handler
@@ -37,18 +38,25 @@ chrome.storage.onChanged.addListener(op.changeHandler);
 // Create Context Menu
 chrome.contextMenus.create({
     "title": "Download with Real-Debrid",
-    "contexts": ["page", "link", "selection"],
+    "contexts": ["link", "selection"],
     "onclick": function(info) {
         if (typeof info.selectionText !== "undefined") {
             rd.selectionHandler(info.selectionText);
         } else if (typeof info.linkUrl !== "undefined") {
             rd.urlHandler(info.linkUrl);
-        } else {
-            rd.urlHandler(info.pageUrl);
         }
     }
 });
 
+// Create Page Action
+chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+    chrome.declarativeContent.onPageChanged.addRules(rm.getRules());
+});
+
+// Create Page Action Listener
+chrome.pageAction.onClicked.addListener(function(tab) {
+    rd.urlHandler(tab.url);
+});
 
 function Options() {
 
@@ -382,4 +390,30 @@ function DownloadManager() {
             rd.checkAccount();
         }
     };
+}
+
+function RuleMaker() {
+
+    this.hosts = ['1fichier.com', 'desfichiers.com', 'dfichiers.com', '1st-files.com', '2shared.com', '4shared.com', 'allmyvideos.net', 'asfile.com', 'bayfiles.com', 'beststreams.net', 'bitshare.com', 'canalplus.fr', 'catshare.net', 'cbs.com', 'crocko.com', 'cwtv.com', 'datafile.com', 'datafilehost.com', 'datei.to', 'ddlstorage.com', 'depfile.com', 'i-filez.com', 'divxstage.eu', 'divxstage.to', 'dizzcloud.com', 'dl.free.fr', 'easybytez.com', 'extmatrix.com', 'filecloud.io', 'filefactory.com', 'fileflyer.com', 'filemonkey.in', 'fileom.com', 'fileover.net', 'fileparadox.in', 'filepost.com', 'filerio.com', 'filesabc.com', 'filesflash.com', 'filesflash.net', 'filesmonster.com', 'fileswap.com', 'putlocker.com', 'firedrive.com', 'freakshare.net', 'gigapeta.com', 'gigasize.com', 'gulfup.com', 'hugefiles.net', 'hulkshare.com', 'hulu.com', 'jumbofiles.com', 'junocloud.me', 'keep2share.cc', 'k2s.cc', 'keep2s.cc', 'k2share.cc', 'letitbit.net', 'load.to', 'luckyshare.net', 'mediafire.com', 'mega.co.nz', 'megashares.com', 'mixturevideo.com', 'mixturecloud.com', 'movshare.net', 'netload.in', 'novamov.com', 'nowdownload.eu', 'nowdownload.ch', 'nowdownload.sx', 'nowdownload.ag', 'nowdownload.at', 'nowvideo.eu', 'nowvideo.ch', 'nowvideo.sx', 'nowvideo.ag', 'nowvideo.at', 'oboom.com', 'purevid.com', 'rapidgator.net', 'rg.to', 'rapidshare.com', 'rarefile.net', 'redbunker.net', 'redtube.com', 'rutube.ru', 'scribd.com', 'secureupload.eu', 'sendspace.com', 'share-online.biz', 'shareflare.net', 'sky.fm', 'sockshare.com', 'soundcloud.com', 'speedyshare.com', 'lumfile.com', 'terafile.co', 'turbobit.net', 'tusfiles.net', 'ulozto.net', 'ultramegabit.com', 'uploadto.us', 'unibytes.com', 'uploadable.ch', 'uploadc.com', 'uploaded.to', 'uploaded.net', 'ul.to', 'uploadhero.co', 'uploadhero.com', 'uploading.com', 'uploadlux.com', 'upstore.net', 'uptobox.com', 'userporn.com', 'veevr.com', 'vimeo.com', 'vip-file.com', 'wat.tv', 'youporn.com', 'youtube.com', 'yunfile.com', 'zippyshare.com'];
+    var that = this;
+
+    this.getRules = function() {
+        var rules = [];
+        for (var i = 0; i < that.hosts.length; i++) {
+            rules.push({
+                conditions: [
+                    new chrome.declarativeContent.PageStateMatcher({
+                        pageUrl: {
+                            hostContains: that.hosts[i]
+                        },
+                    })
+                ],
+                actions: [
+                    new chrome.declarativeContent.ShowPageAction()
+                ]
+            });
+        }
+        return rules;
+    };
+
 }

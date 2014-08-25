@@ -1,3 +1,12 @@
+## 1.7.x
+
+Features:
+
+ - Recent downloads card
+ - Account information card
+ - Limited hosters card
+ - Page action added to supported hosters (icon in URL bar)
+
 ## 1.6.x
 
 Features:

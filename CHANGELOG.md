@@ -11,6 +11,7 @@ Bugfixes:
 
  - Used percentages fixed
  - Multiple instances of the options page fixed
+ - Install bug fixed
 
 ## 1.6.x
 

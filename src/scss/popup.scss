@@ -1,0 +1,66 @@
+$background-color: #FFF;
+$font-color: #444;
+$font-size: 16px;
+$font-stack: sans-serif;
+$width: 300px;
+$brand-color: #428bca;
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: $background-color;
+    font-size: $font-size;
+    color: $font-color;
+    font-family: $font-stack;
+    width: $width;
+}
+
+.brand{
+    background-color: darken($brand-color, 10%);
+    padding: 15px;
+    align: center;
+    color: white;
+    text-shadow: 0 0 5px  darken($brand-color,50%);
+
+    h1{
+        margin: 0;
+        padding :0;
+        padding :0;
+    }
+}
+
+.actions {
+
+
+	ol{
+        display: flex;
+        flex-direction: column;
+
+        li{
+            display: flex;
+            padding: 15px;
+            a{
+                flex: 1;
+                color: darken($brand-color,35%);
+                text-decoration: none;
+                font-weight: bold;
+                i{
+                    float: right;
+                }
+            }
+
+            .fa{
+                position: relative;
+                top: 2px;
+                color: darken($brand-color,15%);
+            }
+        }
+    }
+}
+
+
+
+@import "_typography.scss";

@@ -18,7 +18,6 @@ var is = new Installer();
 var dm = new DownloadManager();
 var nf = new Notifier();
 var op = new Options();
-var rm = new RuleMaker();
 var rd;
 
 // Register Options Handler
@@ -29,10 +28,16 @@ op.addListener(function() {
 // Load Options
 op.load();
 
-// Register Chrome Handlers
+// Register Chrome Listeners
+chrome.runtime.onInstalled.addListener(is.installHandler);
+chrome.runtime.onUpdateAvailable.addListener(is.updateHandler);
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.url) {
+        rd.urlHandler(request.url);
+    }
+});
 chrome.downloads.onChanged.addListener(dm.changeHandler);
 chrome.notifications.onClicked.addListener(nf.clickHandler);
-chrome.runtime.onInstalled.addListener(is.installHandler);
 chrome.storage.onChanged.addListener(op.changeHandler);
 
 // Create Context Menu
@@ -46,16 +51,6 @@ chrome.contextMenus.create({
             rd.urlHandler(info.linkUrl);
         }
     }
-});
-
-// Create Page Action
-chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    chrome.declarativeContent.onPageChanged.addRules(rm.getRules());
-});
-
-// Create Page Action Listener
-chrome.pageAction.onClicked.addListener(function(tab) {
-    rd.urlHandler(tab.url);
 });
 
 function Options() {
@@ -303,18 +298,28 @@ function Notifier() {
     };
 
     this.openOptions = function() {
-        chrome.tabs.create({
-            url: 'html/options.html'
-        }, function() {});
+        var optionsUrl = chrome.extension.getURL('html/options.html');
+        chrome.tabs.query({
+            url: optionsUrl
+        }, function(tabs) {
+            if (tabs.length) {
+                chrome.tabs.update(tabs[0].id, {
+                    active: true
+                });
+            } else {
+                chrome.tabs.create({
+                    url: optionsUrl
+                });
+            }
+            window.close();
+        });
     };
 }
 
 /* Installer */
 function Installer() {
 
-    var that = this;
-
-    this.onInstall = function(currVersion) {
+    this.installHandler = function(currVersion) {
         chrome.tabs.create({
             url: "html/options.html"
         }, function() {
@@ -322,7 +327,7 @@ function Installer() {
         });
     };
 
-    this.onUpdate = function(prevVersion, currVersion) {
+    this.updateHandler = function(prevVersion, currVersion) {
         var prevVersionDigits = prevVersion.split('.');
         var currVersionDigits = currVersion.split('.');
         if (prevVersionDigits.length >= 2 && currVersionDigits.length >= 2 && prevVersionDigits[0] == currVersionDigits[0] && prevVersionDigits[1] == currVersionDigits[1]) {
@@ -335,17 +340,8 @@ function Installer() {
                 }, function() {});
             });
         }
+        chrome.runtime.reload();
     };
-
-    this.installHandler = function(details) {
-        var currVersion = chrome.runtime.getManifest().version;
-        if (details.reason == "install") {
-            that.onInstall(currVersion);
-        } else if (details.reason == "update") {
-            that.onUpdate(details.previousVersion, currVersion);
-        }
-    };
-
 }
 
 /* Download Manager */
@@ -388,30 +384,4 @@ function DownloadManager() {
             rd.checkAccount();
         }
     };
-}
-
-function RuleMaker() {
-
-    this.hosts = ['1fichier.com', 'desfichiers.com', 'dfichiers.com', '1st-files.com', '2shared.com', '4shared.com', 'allmyvideos.net', 'asfile.com', 'bayfiles.com', 'beststreams.net', 'bitshare.com', 'canalplus.fr', 'catshare.net', 'cbs.com', 'crocko.com', 'cwtv.com', 'datafile.com', 'datafilehost.com', 'datei.to', 'ddlstorage.com', 'depfile.com', 'i-filez.com', 'divxstage.eu', 'divxstage.to', 'dizzcloud.com', 'dl.free.fr', 'easybytez.com', 'extmatrix.com', 'filecloud.io', 'filefactory.com', 'fileflyer.com', 'filemonkey.in', 'fileom.com', 'fileover.net', 'fileparadox.in', 'filepost.com', 'filerio.com', 'filesabc.com', 'filesflash.com', 'filesflash.net', 'filesmonster.com', 'fileswap.com', 'putlocker.com', 'firedrive.com', 'freakshare.net', 'gigapeta.com', 'gigasize.com', 'gulfup.com', 'hugefiles.net', 'hulkshare.com', 'hulu.com', 'jumbofiles.com', 'junocloud.me', 'keep2share.cc', 'k2s.cc', 'keep2s.cc', 'k2share.cc', 'letitbit.net', 'load.to', 'luckyshare.net', 'mediafire.com', 'mega.co.nz', 'megashares.com', 'mixturevideo.com', 'mixturecloud.com', 'movshare.net', 'netload.in', 'novamov.com', 'nowdownload.eu', 'nowdownload.ch', 'nowdownload.sx', 'nowdownload.ag', 'nowdownload.at', 'nowvideo.eu', 'nowvideo.ch', 'nowvideo.sx', 'nowvideo.ag', 'nowvideo.at', 'oboom.com', 'purevid.com', 'rapidgator.net', 'rg.to', 'rapidshare.com', 'rarefile.net', 'redbunker.net', 'redtube.com', 'rutube.ru', 'scribd.com', 'secureupload.eu', 'sendspace.com', 'share-online.biz', 'shareflare.net', 'sky.fm', 'sockshare.com', 'soundcloud.com', 'speedyshare.com', 'lumfile.com', 'terafile.co', 'turbobit.net', 'tusfiles.net', 'ulozto.net', 'ultramegabit.com', 'uploadto.us', 'unibytes.com', 'uploadable.ch', 'uploadc.com', 'uploaded.to', 'uploaded.net', 'ul.to', 'uploadhero.co', 'uploadhero.com', 'uploading.com', 'uploadlux.com', 'upstore.net', 'uptobox.com', 'userporn.com', 'veevr.com', 'vimeo.com', 'vip-file.com', 'wat.tv', 'youporn.com', 'youtube.com', 'yunfile.com', 'zippyshare.com'];
-    var that = this;
-
-    this.getRules = function() {
-        var rules = [];
-        for (var i = 0; i < that.hosts.length; i++) {
-            rules.push({
-                conditions: [
-                    new chrome.declarativeContent.PageStateMatcher({
-                        pageUrl: {
-                            hostContains: that.hosts[i]
-                        },
-                    })
-                ],
-                actions: [
-                    new chrome.declarativeContent.ShowPageAction()
-                ]
-            });
-        }
-        return rules;
-    };
-
 }

@@ -11,14 +11,14 @@ $logo: url("../img/logo.png");
     
     100%{
         padding-left:35px;
-        background-color: darken($sidebar-color, 5%);
+        background-color: transparentize(darken($sidebar-color, 8%), 0.4);
     }
 }
 
 @-webkit-keyframes hover-out{
     0%{
         padding-left:35px;
-        background-color: darken($sidebar-color, 5%);
+        background-color: transparentize(darken($sidebar-color, 8%), 0.4);
     }
     
     100%{

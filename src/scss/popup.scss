@@ -47,6 +47,9 @@ body{
                 color: darken($brand-color,35%);
                 text-decoration: none;
                 font-weight: bold;
+                i{
+                    float: right;
+                }
             }
 
             .fa{

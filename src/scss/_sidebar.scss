@@ -43,14 +43,19 @@ $logo: url("../img/logo.png");
 
         li{
             display: flex;
-            padding: 15px;
+            
             border-bottom: 1px solid darken($sidebar-color, 2%);
 
             a{
                 flex: 1;
+                padding: 15px;
                 color: lighten($sidebar-color,35%);
                 text-decoration: none;
                 font-weight: bold;
+                
+                i{
+                    float:right;
+                }
             }
 
             .fa{

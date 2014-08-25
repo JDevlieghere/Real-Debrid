@@ -1,6 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Real-Debrid Extension",
+  "short_name": "Real-Debrid",
   "description": "Real-Debrid Google Chrome Extension (Plugin)",
   "version": "1.7.0",
   "icons" : {

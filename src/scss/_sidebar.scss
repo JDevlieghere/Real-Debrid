@@ -6,7 +6,7 @@ $logo: url("../img/logo.png");
 @-webkit-keyframes hover{
     0%{
         padding-left:15px;
-        background-color: $sidebar-color;
+        background-color: transparent;
     }
     
     100%{
@@ -23,7 +23,7 @@ $logo: url("../img/logo.png");
     
     100%{
         padding-left:15px;
-        background-color: $sidebar-color;
+        background-color: transparent;
     }
 }
 
@@ -42,7 +42,7 @@ $logo: url("../img/logo.png");
         //background-color: rgba(0,0,0,0.2);
         padding: 15px;
         color: white;
-        text-shadow: 0 0 5px  darken($sidebar-color,50%);
+        text-shadow: 0 0 5px  darken($sidebar-color,50%); 
 
         h1{
             margin: 0;

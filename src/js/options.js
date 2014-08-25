@@ -14,8 +14,15 @@ $(document).ready(function() {
     var version = chrome.runtime.getManifest().version;
     $('#version').html(version);
 
-    getDownloads();
-    getAccount();
+    getDownloads(function() {
+        var target = window.location.hash.substr(1);
+        scroll(target);
+    });
+    getAccount(function() {
+        var target = $('#' + window.location.hash.substr(1));
+        scroll(target);
+    });
+
 });
 
 $(function() {
@@ -23,15 +30,20 @@ $(function() {
         if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
             var target = $(this.hash);
             target = target.length ? target : $('[id=' + this.hash.slice(1) + ']');
-            if (target.length) {
-                $('#contentarea').scrollTo(target, {
-                    duration: 'slow'
-                });
-                return false;
-            }
+            scroll(target);
         }
     });
 });
+
+function scroll(target) {
+    if (target.length) {
+        $('#contentarea').scrollTo(target, {
+            duration: 'slow'
+        });
+        return false;
+    }
+}
+
 
 $("button#save").click(function() {
     var warningPercentage = $("input#warningPercentage").val();
@@ -88,7 +100,7 @@ function loginRequired() {
     $('section.login-required').html('You have to be logged in to use this feature.');
 }
 
-function getAccount() {
+function getAccount(callback) {
     var url = "https://real-debrid.com/api/account.php?out=json";
     api(url, function(data) {
         if (data.error) {
@@ -116,13 +128,14 @@ function getAccount() {
                 html += '</div>';
             }
             $('#hosters').append(html);
+            callback();
         }
 
     });
 
 }
 
-function getDownloads() {
+function getDownloads(callback) {
     var url = "https://real-debrid.com/api/downloads.php?out=json";
     api(url, function(data) {
         if (data.error) {
@@ -140,6 +153,7 @@ function getDownloads() {
                 html += '</tr>';
             }
             $('#downloads tbody').append(html);
+            callback();
         }
 
     });

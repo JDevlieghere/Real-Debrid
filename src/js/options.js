@@ -11,6 +11,12 @@ $(document).ready(function() {
         $("input#warningDays").val(result.warningDays);
     });
 
+    chrome.storage.sync.get({
+        'bypassNativeDl': false
+    }, function(result) {
+        $("input#bypassNativeDl").attr('checked', result.bypassNativeDl);
+    });
+
     var version = chrome.runtime.getManifest().version;
     $('#version').html(version);
 
@@ -48,6 +54,7 @@ function scroll(target) {
 $("button#save").click(function() {
     var warningPercentage = $("input#warningPercentage").val();
     var warningDays = $("input#warningDays").val();
+    var bypassNativeDl = $("input#bypassNativeDl").is(':checked');
 
     if (warningDays && warningPercentage) {
         chrome.storage.sync.set({
@@ -57,6 +64,11 @@ $("button#save").click(function() {
         chrome.storage.sync.set({
             'warningDays': warningDays
         });
+
+        chrome.storage.sync.set({
+            'bypassNativeDl': bypassNativeDl
+        });
+
         success();
     } else {
         failure();

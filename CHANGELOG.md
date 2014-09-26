@@ -6,6 +6,7 @@ Features:
  - Account information card
  - Limited hosters card
  - Browser icon added (upper right corner)
+ - Bypass native Chrome downloads
 
 Bugfixes:
 

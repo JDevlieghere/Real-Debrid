@@ -384,11 +384,8 @@ function DownloadManager(bypassNativeDl) {
             chrome.tabs.create({
                 url: url,
                 active: false
-            }, function(tab) {
-                that.addToActive(tab.id);
             });
         }
-
     };
 
     this.checkComplete = function() {

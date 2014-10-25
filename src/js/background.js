@@ -26,7 +26,6 @@ op.addListener(function() {
     rd = new RealDebrid(op.values.warningPercentage, op.values.warningDays);
     dm = new DownloadManager(op.values.bypassNativeDl);
     chrome.downloads.onChanged.addListener(dm.changeHandler);
-    console.log(op.values.bypassNativeDl);
 });
 
 // Load Options

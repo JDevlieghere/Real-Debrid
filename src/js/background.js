@@ -15,14 +15,17 @@ limitations under the License.
 */
 
 var is = new Installer();
-var dm = new DownloadManager();
 var nf = new Notifier();
 var op = new Options();
+
 var rd;
+var dm;
 
 // Register Options Handler
 op.addListener(function() {
     rd = new RealDebrid(op.values.warningPercentage, op.values.warningDays);
+    dm = new DownloadManager(op.values.bypassNativeDl);
+    chrome.downloads.onChanged.addListener(dm.changeHandler);
 });
 
 // Load Options
@@ -35,7 +38,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         rd.urlHandler(request.url);
     }
 });
-chrome.downloads.onChanged.addListener(dm.changeHandler);
 chrome.notifications.onClicked.addListener(nf.clickHandler);
 chrome.storage.onChanged.addListener(op.changeHandler);
 
@@ -66,7 +68,7 @@ function Options() {
     this.isReady = function() {
         var ready = true;
         for (var key in that.values) {
-            ready = ready && that.values[key];
+            ready = ready && that.values[key] !== null;
         }
         return ready;
     };
@@ -94,6 +96,7 @@ function Options() {
         that.onLoaded.initEvent('onLoaded', true, true);
         that.values.warningPercentage = null;
         that.values.warningDays = null;
+        that.values.bypassNativeDl = null;
     };
 
     this.load = function() {
@@ -111,6 +114,15 @@ function Options() {
             that.values.warningDays = result.warningDays;
             that.checkReady();
         });
+
+        chrome.storage.sync.get({
+            'bypassNativeDl': false
+        }, function(result) {
+            that.values.bypassNativeDl = result.bypassNativeDl;
+            that.checkReady();
+        });
+
+
     };
 }
 
@@ -355,17 +367,24 @@ function Installer() {
 }
 
 /* Download Manager */
-function DownloadManager() {
+function DownloadManager(bypassNativeDl) {
 
     this.active = [];
     var that = this;
 
     this.download = function(url) {
-        chrome.downloads.download({
-            url: url
-        }, function(downloadId) {
-            that.addToActive(downloadId);
-        });
+        if (!bypassNativeDl) {
+            chrome.downloads.download({
+                url: url
+            }, function(downloadId) {
+                that.addToActive(downloadId);
+            });
+        } else {
+            chrome.tabs.create({
+                url: url,
+                active: false
+            });
+        }
     };
 
     this.checkComplete = function() {

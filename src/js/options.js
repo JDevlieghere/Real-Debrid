@@ -155,7 +155,7 @@ function getDownloads(callback) {
     var url = "https://real-debrid.com/api/downloads.php?out=json";
     api(url, function(data) {
         if (data.error) {
-            loginRequired();
+            downloadListDisabled();
         } else {
             var downloads = data.downloads;
             var html = '';

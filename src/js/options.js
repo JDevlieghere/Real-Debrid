@@ -109,7 +109,11 @@ function api(url, callback) {
 }
 
 function loginRequired() {
-    $('section.login-required').html('You have to be logged in to use this feature.');
+    $('section.login-required.accountInfo').html('You have to be logged in to use this feature.');
+}
+
+function downloadListDisabled(){
+    $('section.login-required.latestDownloads').html('Your download list is disabled.');
 }
 
 function getAccount(callback) {
@@ -151,7 +155,7 @@ function getDownloads(callback) {
     var url = "https://real-debrid.com/api/downloads.php?out=json";
     api(url, function(data) {
         if (data.error) {
-            loginRequired();
+            downloadListDisabled();
         } else {
             var downloads = data.downloads;
             var html = '';

@@ -213,6 +213,7 @@ function RealDebrid(warningPercentage, warningDays) {
                 hoster: 'utb' //todo make aviable in options 
             })
             .done(function (data) {
+                //check if page has error container
                 if (data.indexOf('error-box') === -1) {
                     var hashes = [], currentHashPosition;
                     while (currentHashPosition !== -1) {
@@ -232,7 +233,7 @@ function RealDebrid(warningPercentage, warningDays) {
                         nf.error('Could not add magnet to RD - try manually.');
                     }
                 } else {
-                    debugger;
+                    //get errormessage
                     var errorMessage = data.substring(data.indexOf('error-box') + 11, data.length);
                     errorMessage = errorMessage.substring(0, errorMessage.indexOf('</div>'));
                     nf.error(errorMessage);

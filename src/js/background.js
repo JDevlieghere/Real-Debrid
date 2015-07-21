@@ -22,8 +22,11 @@ var rd;
 var dm;
 
 // Register Options Handler
-op.addListener(function () {
-    rd = new RealDebrid(op.values.warningPercentage, op.values.warningDays);
+op.addListener(function() {
+    rd = new RealDebrid(op.values.warningPercentage,
+        op.values.warningDays,
+        op.values.splittingSize,
+        op.values.torrentHost);
     dm = new DownloadManager(op.values.bypassNativeDl);
     chrome.downloads.onChanged.addListener(dm.changeHandler);
 });
@@ -33,7 +36,7 @@ op.load();
 
 // Register Chrome Listeners
 chrome.runtime.onInstalled.addListener(is.installHandler);
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.url) {
         rd.urlHandler(request.url);
     }
@@ -45,7 +48,7 @@ chrome.storage.onChanged.addListener(op.changeHandler);
 chrome.contextMenus.create({
     "title": "Download with Real-Debrid",
     "contexts": ["link", "selection"],
-    "onclick": function (info) {
+    "onclick": function(info) {
         if (typeof info.selectionText !== "undefined") {
             rd.selectionHandler(info.selectionText);
         } else if (typeof info.linkUrl !== "undefined") {
@@ -60,11 +63,11 @@ function Options() {
 
     var that = this;
 
-    this.addListener = function (handler) {
+    this.addListener = function(handler) {
         document.addEventListener('onLoaded', handler, false);
     };
 
-    this.isReady = function () {
+    this.isReady = function() {
         var ready = true;
         for (var key in that.values) {
             ready = ready && that.values[key] !== null;
@@ -72,13 +75,13 @@ function Options() {
         return ready;
     };
 
-    this.checkReady = function () {
+    this.checkReady = function() {
         if (that.isReady()) {
             document.dispatchEvent(that.onLoaded);
         }
     };
 
-    this.changeHandler = function (changes, namespace) {
+    this.changeHandler = function(changes, namespace) {
         var changed = false;
         for (var key in changes) {
             if (that.values[key]) {
@@ -91,42 +94,57 @@ function Options() {
         }
     };
 
-    this.init = function () {
+    this.init = function() {
         that.onLoaded.initEvent('onLoaded', true, true);
         that.values.warningPercentage = null;
         that.values.warningDays = null;
         that.values.bypassNativeDl = null;
+        that.values.splittingSize = null;
+        that.values.torrentHost = null;
     };
 
-    this.load = function () {
+    this.load = function() {
         that.init();
         chrome.storage.sync.get({
             'warningPercentage': 75
-        }, function (result) {
+        }, function(result) {
             that.values.warningPercentage = result.warningPercentage;
             that.checkReady();
         });
 
         chrome.storage.sync.get({
             'warningDays': 7
-        }, function (result) {
+        }, function(result) {
             that.values.warningDays = result.warningDays;
             that.checkReady();
         });
 
         chrome.storage.sync.get({
             'bypassNativeDl': false
-        }, function (result) {
+        }, function(result) {
             that.values.bypassNativeDl = result.bypassNativeDl;
             that.checkReady();
         });
 
+        chrome.storage.sync.get({
+            'splittingSize': 50
+        }, function(result) {
+            that.values.splittingSize = result.splittingSize;
+            that.checkReady();
+        });
+
+        chrome.storage.sync.get({
+            'torrentHost': "utb"
+        }, function(result) {
+            that.values.torrentHost = result.torrentHost;
+            that.checkReady();
+        });
 
     };
 }
 
 /* RealDebrid */
-function RealDebrid(warningPercentage, warningDays) {
+function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) {
 
     this.warnings = [];
     this.warningPercentage = warningPercentage;
@@ -136,33 +154,33 @@ function RealDebrid(warningPercentage, warningDays) {
 
     chrome.storage.local.get({
         warnings: []
-    }, function (result) {
+    }, function(result) {
         that.warnings = result.warnings;
         that.checkAccount();
     });
 
-    this.selectionHandler = function (selection) {
+    this.selectionHandler = function(selection) {
         var urls = selection.split(" ");
         var regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
-        $.each(urls, function (index, url) {
+        $.each(urls, function(index, url) {
             if (url.match(regex)) {
                 that.urlHandler(url);
             }
         });
     };
 
-    this.urlHandler = function (url) {
+    this.urlHandler = function(url) {
         if (url.lastIndexOf('magnet:', 0) === 0) {
-            that.handleMagnet(url, function (success) { });
+            that.handleMagnet(url, function(success) {});
         } else {
-            that.unrestrict(url, function (result) {
+            that.unrestrict(url, function(result) {
                 if (!result.error) {
                     that.download(result);
                 } else if (result.error == 1) {
-                    nf.error("Please make sure you are logged in. Click here to go to real-debrid.com", function () {
+                    nf.error("Please make sure you are logged in. Click here to go to real-debrid.com", function() {
                         chrome.tabs.create({
                             url: 'https://real-debrid.com'
-                        }, function () { });
+                        }, function() {});
                     });
                 } else {
                     nf.basic(result.message, url);
@@ -171,12 +189,12 @@ function RealDebrid(warningPercentage, warningDays) {
         }
     };
 
-    this.download = function (data) {
+    this.download = function(data) {
         var downloadUrl = data.generated_links[0][2];
         dm.download(downloadUrl);
     };
 
-    this.api = function (url, callback) {
+    this.api = function(url, callback) {
         $.ajax({
             type: "GET",
             url: url,
@@ -187,35 +205,35 @@ function RealDebrid(warningPercentage, warningDays) {
                 withCredentials: true
             },
             success: callback,
-            error: function () {
+            error: function() {
                 nf.error("Could not reach real-debrid.com");
             }
         });
     };
 
-    this.unrestrict = function (url, callback) {
+    this.unrestrict = function(url, callback) {
         var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
         that.api(apiUrl, callback);
     };
 
-    this.account = function (callback) {
+    this.account = function(callback) {
         var apiUrl = 'https://real-debrid.com/api/account.php?out=json';
         that.api(apiUrl, callback);
     };
 
-    this.handleMagnet = function (magnetLink, callback) {
+    this.handleMagnet = function(magnetLink, callback) {
         var torrentUrl = 'https://real-debrid.com/torrents';
         var success = false;
-        $.post(torrentUrl,
-            {
+        $.post(torrentUrl, {
                 magnet: magnetLink,
-                splitting_size: '50', //todo make aviable in options 
-                hoster: 'utb' //todo make aviable in options 
+                splitting_size: splittingSize,
+                hoster: torrentHost
             })
-            .done(function (data) {
+            .done(function(data) {
                 //check if page has error container
                 if (data.indexOf('error-box') === -1) {
-                    var hashes = [], currentHashPosition;
+                    var hashes = [],
+                        currentHashPosition;
                     while (currentHashPosition !== -1) {
                         currentHashPosition = data.indexOf("$('#link_");
                         if (currentHashPosition !== -1) {
@@ -224,11 +242,13 @@ function RealDebrid(warningPercentage, warningDays) {
                             hashes.push(hash);
                             data = data.substring(hash.length, data.length);
                         }
-                    }                    
+                    }
                     //check for hashes --> no hash equals errors
                     if (hashes.length) {
                         //redirect to real debrid for further handling of the magnet
-                        chrome.tabs.create({ url: torrentUrl });
+                        chrome.tabs.create({
+                            url: torrentUrl
+                        });
                         success = true;
                     } else {
                         nf.error('Could not add magnet to RD - try manually.');
@@ -238,17 +258,17 @@ function RealDebrid(warningPercentage, warningDays) {
                     var errorMessage = data.substring(data.indexOf('error-box') + 11, data.length);
                     errorMessage = errorMessage.substring(0, errorMessage.indexOf('</div>'));
                     nf.error(errorMessage);
-                }                
+                }
                 //that.handleMagnetHashes(hashes, callback);
             })
-            .fail(function (data) {
-                nf.error('Error while pushing the Magnet - ' + data.statusText);               
-            }).always(function(){
-                 callback(success);
+            .fail(function(data) {
+                nf.error('Error while pushing the Magnet - ' + data.statusText);
+            }).always(function() {
+                callback(success);
             });
     };
 
-    // #############Keep this if there is a plan to add the UI to the page in a later version 
+    // #############Keep this if there is a plan to add the UI to the page in a later version
     // this.handleMagnetHashes = function (hashes, callback) {
     //     var overlay = that.overlayInstance();
     //     overlay.$title.append('<h2>Select your files</h2>');
@@ -268,11 +288,11 @@ function RealDebrid(warningPercentage, warningDays) {
     //         $title: $('<div>'),
     //         $container: $('<div style="width:600px;border-radius:4px;padding:10px;background:#fff;position:absolute;right:0;left:0;margin:30px auto;">'),
     //         $overlay:  $('<div style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;background-color:rgba(0,0,0,0.2);">'),
-    //         show: function () {       
-    //             this.$container.append(this.$title); 
-    //             this.$overlay.append(this.$container);      
-    //             $('body').append(this.$overlay);             
-    //         }, 
+    //         show: function () {
+    //             this.$container.append(this.$title);
+    //             this.$overlay.append(this.$container);
+    //             $('body').append(this.$overlay);
+    //         },
     //         hide: function(){
     //             this.$overlay.hide( 500, function() {
     //                 $(this).children().remove();
@@ -284,7 +304,7 @@ function RealDebrid(warningPercentage, warningDays) {
     // }
 
 
-    this.checkHoster = function (hoster) {
+    this.checkHoster = function(hoster) {
         var index = that.warnings.indexOf(hoster.name);
         var total = parseFloat(hoster.limit) + parseFloat(hoster.additional_traffic);
         var used = Math.round((parseFloat(hoster.downloaded) / total) * 100);
@@ -296,7 +316,7 @@ function RealDebrid(warningPercentage, warningDays) {
         }
     };
 
-    this.checkPremium = function (data) {
+    this.checkPremium = function(data) {
         var key = 'premium-left';
         var daysLeft = Math.round(data[key] / (-1 * 24 * 60 * 60));
         var index = that.warnings.indexOf(key);
@@ -308,30 +328,30 @@ function RealDebrid(warningPercentage, warningDays) {
         }
     };
 
-    this.checkAccount = function () {
-        that.account(function (result) {
+    this.checkAccount = function() {
+        that.account(function(result) {
             if (!result.error) {
                 that.checkPremium(result);
-                $.each(result.limited, function (index, hoster) {
+                $.each(result.limited, function(index, hoster) {
                     that.checkHoster(hoster);
                 });
             }
         });
     };
 
-    this.storeWarning = function (warning) {
+    this.storeWarning = function(warning) {
         that.warnings.push(warning);
         chrome.storage.local.set({
             warnings: that.warnings
-        }, function () { });
+        }, function() {});
     };
 
-    this.removeWarning = function (warning) {
+    this.removeWarning = function(warning) {
         var index = that.warnings.indexOf(warning);
         that.warnings.splice(index, 1);
         chrome.storage.local.set({
             warnings: that.warnings
-        }, function () { });
+        }, function() {});
     };
 
 }
@@ -344,7 +364,7 @@ function Notifier() {
 
     var that = this;
 
-    this.basic = function (title, text, onClicked) {
+    this.basic = function(title, text, onClicked) {
         var id = ++that.notificationId;
         var options = {
             iconUrl: "/icons/icon-128.png",
@@ -353,14 +373,14 @@ function Notifier() {
             message: text,
             priority: 1
         };
-        chrome.notifications.create("id_" + id, options, function (notificationId) {
+        chrome.notifications.create("id_" + id, options, function(notificationId) {
             if (onClicked) {
                 that.callbacks[notificationId] = onClicked;
             }
         });
     };
 
-    this.progress = function (title, text, progress, onClicked) {
+    this.progress = function(title, text, progress, onClicked) {
         var id = ++that.notificationId;
         var options = {
             iconUrl: "/icons/icon-128.png",
@@ -370,33 +390,33 @@ function Notifier() {
             priority: 1,
             progress: progress
         };
-        chrome.notifications.create("id_" + id, options, function (notificationId) {
+        chrome.notifications.create("id_" + id, options, function(notificationId) {
             if (onClicked) {
                 that.callbacks[notificationId] = onClicked;
             }
         });
     };
 
-    this.error = function (text, callback) {
+    this.error = function(text, callback) {
         that.basic("Error", text, callback);
     };
 
-    this.info = function (text, callback) {
+    this.info = function(text, callback) {
         that.basic("Real-Debrid", text, callback);
     };
 
-    this.clickHandler = function (notificationId) {
+    this.clickHandler = function(notificationId) {
         if (that.callbacks[notificationId]) {
             that.callbacks[notificationId]();
             delete that.callbacks[notificationId];
         }
     };
 
-    this.openOptions = function () {
+    this.openOptions = function() {
         var optionsUrl = chrome.extension.getURL('html/options.html');
         chrome.tabs.query({
             url: optionsUrl
-        }, function (tabs) {
+        }, function(tabs) {
             if (tabs.length) {
                 chrome.tabs.update(tabs[0].id, {
                     active: true
@@ -416,30 +436,30 @@ function Installer() {
 
     var that = this;
 
-    this.onInstall = function (currVersion) {
+    this.onInstall = function(currVersion) {
         chrome.tabs.create({
             url: "html/options.html"
-        }, function () {
+        }, function() {
             nf.info("Extension installed");
         });
     };
 
-    this.onUpdate = function (prevVersion, currVersion) {
+    this.onUpdate = function(prevVersion, currVersion) {
         var prevVersionDigits = prevVersion.split('.');
         var currVersionDigits = currVersion.split('.');
         if (prevVersionDigits.length >= 2 && currVersionDigits.length >= 2 && prevVersionDigits[0] == currVersionDigits[0] && prevVersionDigits[1] == currVersionDigits[1]) {
             console.log("Extension updated (bugfix) to version " + currVersion);
         } else {
             var message = "Extension updated to version " + currVersion + ". Click here to see all changes.";
-            nf.info(message, function () {
+            nf.info(message, function() {
                 chrome.tabs.create({
                     url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'
-                }, function () { });
+                }, function() {});
             });
         }
     };
 
-    this.installHandler = function (details) {
+    this.installHandler = function(details) {
         var currVersion = chrome.runtime.getManifest().version;
         if (details.reason == "install") {
             that.onInstall(currVersion);
@@ -455,11 +475,11 @@ function DownloadManager(bypassNativeDl) {
     this.active = [];
     var that = this;
 
-    this.download = function (url) {
+    this.download = function(url) {
         if (!bypassNativeDl) {
             chrome.downloads.download({
                 url: url
-            }, function (downloadId) {
+            }, function(downloadId) {
                 that.addToActive(downloadId);
             });
         } else {
@@ -470,22 +490,22 @@ function DownloadManager(bypassNativeDl) {
         }
     };
 
-    this.checkComplete = function () {
+    this.checkComplete = function() {
         if (that.active.length === 0) {
             nf.info("All downloads complete", nf.openOptions);
         }
     };
 
-    this.addToActive = function (id) {
+    this.addToActive = function(id) {
         that.active.push(id);
     };
 
-    this.removeFromActive = function (id) {
+    this.removeFromActive = function(id) {
         var index = that.active.indexOf(id);
         that.active.splice(index, 1);
     };
 
-    this.changeHandler = function (downloadItemDelta) {
+    this.changeHandler = function(downloadItemDelta) {
         if (that.active.indexOf(downloadItemDelta.id) > -1 && downloadItemDelta.state) {
             if (downloadItemDelta.state.current == "complete") {
                 that.removeFromActive(downloadItemDelta.id);

@@ -17,6 +17,18 @@ $(document).ready(function() {
         $("input#bypassNativeDl").attr('checked', result.bypassNativeDl);
     });
 
+    chrome.storage.sync.get({
+        'splittingSize': 50
+    }, function(result) {
+        $("input#splittingSize").val(result.splittingSize);
+    });
+
+    chrome.storage.sync.get({
+        'torrentHost': "utb"
+    }, function(result) {
+        $("select#torrentHost").val(result.torrentHost);
+    });
+
     var version = chrome.runtime.getManifest().version;
     $('#version').html(version);
 
@@ -50,11 +62,12 @@ function scroll(target) {
     }
 }
 
-
 $("button#save").click(function() {
     var warningPercentage = $("input#warningPercentage").val();
     var warningDays = $("input#warningDays").val();
     var bypassNativeDl = $("input#bypassNativeDl").is(':checked');
+    var splittingSize = $("input#splittingSize").val();
+    var torrentHost = $("select#torrentHost").val();
 
     if (warningDays && warningPercentage) {
         chrome.storage.sync.set({
@@ -67,6 +80,14 @@ $("button#save").click(function() {
 
         chrome.storage.sync.set({
             'bypassNativeDl': bypassNativeDl
+        });
+
+        chrome.storage.sync.set({
+            'splittingSize': splittingSize
+        });
+
+        chrome.storage.sync.set({
+            'torrentHost': torrentHost
         });
 
         success();
@@ -112,7 +133,7 @@ function loginRequired() {
     $('section.login-required.accountInfo').html('You have to be logged in to use this feature.');
 }
 
-function downloadListDisabled(){
+function downloadListDisabled() {
     $('section.login-required.latestDownloads').html('Your download list is disabled.');
 }
 

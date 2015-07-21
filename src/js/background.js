@@ -221,6 +221,7 @@ function RealDebrid(warningPercentage, warningDays) {
                         if (currentHashPosition !== -1) {
                             data = data.substring(currentHashPosition + 9, data.length);
                             var hash = data.substring(0, data.indexOf("'"));
+                            hashes.push(hash);
                             data = data.substring(hash.length, data.length);
                         }
                     }                    

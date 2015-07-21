@@ -23,7 +23,10 @@ var dm;
 
 // Register Options Handler
 op.addListener(function() {
-    rd = new RealDebrid(op.values.warningPercentage, op.values.warningDays);
+    rd = new RealDebrid(op.values.warningPercentage,
+        op.values.warningDays,
+        op.values.splittingSize,
+        op.values.torrentHost);
     dm = new DownloadManager(op.values.bypassNativeDl);
     chrome.downloads.onChanged.addListener(dm.changeHandler);
 });
@@ -55,7 +58,6 @@ chrome.contextMenus.create({
 });
 
 function Options() {
-
     this.values = {};
     this.onLoaded = document.createEvent('Event');
 
@@ -97,6 +99,8 @@ function Options() {
         that.values.warningPercentage = null;
         that.values.warningDays = null;
         that.values.bypassNativeDl = null;
+        that.values.splittingSize = null;
+        that.values.torrentHost = null;
     };
 
     this.load = function() {
@@ -122,12 +126,25 @@ function Options() {
             that.checkReady();
         });
 
+        chrome.storage.sync.get({
+            'splittingSize': 50
+        }, function(result) {
+            that.values.splittingSize = result.splittingSize;
+            that.checkReady();
+        });
+
+        chrome.storage.sync.get({
+            'torrentHost': "utb"
+        }, function(result) {
+            that.values.torrentHost = result.torrentHost;
+            that.checkReady();
+        });
 
     };
 }
 
 /* RealDebrid */
-function RealDebrid(warningPercentage, warningDays) {
+function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) {
 
     this.warnings = [];
     this.warningPercentage = warningPercentage;
@@ -153,19 +170,23 @@ function RealDebrid(warningPercentage, warningDays) {
     };
 
     this.urlHandler = function(url) {
-        that.unrestrict(url, function(result) {
-            if (!result.error) {
-                that.download(result);
-            } else if (result.error == 1) {
-                nf.error("Please make sure you are logged in. Click here to go to real-debrid.com", function() {
-                    chrome.tabs.create({
-                        url: 'https://real-debrid.com'
-                    }, function() {});
-                });
-            } else {
-                nf.basic(result.message, url);
-            }
-        });
+        if (url.lastIndexOf('magnet:', 0) === 0) {
+            that.handleMagnet(url, function(success) {});
+        } else {
+            that.unrestrict(url, function(result) {
+                if (!result.error) {
+                    that.download(result);
+                } else if (result.error == 1) {
+                    nf.error("Please make sure you are logged in. Click here to go to real-debrid.com", function() {
+                        chrome.tabs.create({
+                            url: 'https://real-debrid.com'
+                        }, function() {});
+                    });
+                } else {
+                    nf.basic(result.message, url);
+                }
+            });
+        }
     };
 
     this.download = function(data) {
@@ -199,6 +220,89 @@ function RealDebrid(warningPercentage, warningDays) {
         var apiUrl = 'https://real-debrid.com/api/account.php?out=json';
         that.api(apiUrl, callback);
     };
+
+    this.handleMagnet = function(magnetLink, callback) {
+        var torrentUrl = 'https://real-debrid.com/torrents';
+        var success = false;
+        $.post(torrentUrl, {
+                magnet: magnetLink,
+                splitting_size: splittingSize,
+                hoster: torrentHost
+            })
+            .done(function(data) {
+                //check if page has error container
+                if (data.indexOf('error-box') === -1) {
+                    var hashes = [],
+                        currentHashPosition;
+                    while (currentHashPosition !== -1) {
+                        currentHashPosition = data.indexOf("$('#link_");
+                        if (currentHashPosition !== -1) {
+                            data = data.substring(currentHashPosition + 9, data.length);
+                            var hash = data.substring(0, data.indexOf("'"));
+                            hashes.push(hash);
+                            data = data.substring(hash.length, data.length);
+                        }
+                    }
+                    //check for hashes --> no hash equals errors
+                    if (hashes.length) {
+                        //redirect to real debrid for further handling of the magnet
+                        chrome.tabs.create({
+                            url: torrentUrl
+                        });
+                        success = true;
+                    } else {
+                        nf.error('Could not add magnet to RD - try manually.');
+                    }
+                } else {
+                    //get errormessage
+                    var errorMessage = data.substring(data.indexOf('error-box') + 11, data.length);
+                    errorMessage = errorMessage.substring(0, errorMessage.indexOf('</div>'));
+                    nf.error(errorMessage);
+                }
+                //that.handleMagnetHashes(hashes, callback);
+            })
+            .fail(function(data) {
+                nf.error('Error while pushing the Magnet - ' + data.statusText);
+            }).always(function() {
+                callback(success);
+            });
+    };
+
+    // #############Keep this if there is a plan to add the UI to the page in a later version
+    // this.handleMagnetHashes = function (hashes, callback) {
+    //     var overlay = that.overlayInstance();
+    //     overlay.$title.append('<h2>Select your files</h2>');
+    //     $.each(hashes, function (i, currentHash) {
+    //         $.get('https://real-debrid.com/ajax/torrent_files.php?id=' + currentHash,
+    //             function (data) {
+    //                 overlay.$container.append(data);
+    //             }
+    //         );
+    //     });
+    //     overlay.show();
+    //     callback(true);
+    // };
+
+    // this.overlayInstance = function () {
+    //     var instance = {
+    //         $title: $('<div>'),
+    //         $container: $('<div style="width:600px;border-radius:4px;padding:10px;background:#fff;position:absolute;right:0;left:0;margin:30px auto;">'),
+    //         $overlay:  $('<div style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;background-color:rgba(0,0,0,0.2);">'),
+    //         show: function () {
+    //             this.$container.append(this.$title);
+    //             this.$overlay.append(this.$container);
+    //             $('body').append(this.$overlay);
+    //         },
+    //         hide: function(){
+    //             this.$overlay.hide( 500, function() {
+    //                 $(this).children().remove();
+    //                 $(this).remove();
+    //             });
+    //         }
+    //     }
+    //     return instance;
+    // }
+
 
     this.checkHoster = function(hoster) {
         var index = that.warnings.indexOf(hoster.name);
@@ -327,7 +431,6 @@ function Notifier() {
     };
 }
 
-/* Installer */
 /* Installer */
 function Installer() {
 

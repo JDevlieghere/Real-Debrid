@@ -1,3 +1,10 @@
+## 1.8.x
+
+Features:
+
+ - Torrent support (SublimePotato)
+ - Improved save animation (StefanPante)
+
 ## 1.7.x
 
 Features:

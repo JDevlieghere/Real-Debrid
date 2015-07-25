@@ -1,50 +1,50 @@
-$(document).ready(function () {
+$(document).ready(function() {
     chrome.storage.sync.get({
         'warningPercentage': 75
-    }, function (result) {
+    }, function(result) {
         $("input#warningPercentage").val(result.warningPercentage);
     });
 
     chrome.storage.sync.get({
         'warningDays': 7
-    }, function (result) {
+    }, function(result) {
         $("input#warningDays").val(result.warningDays);
     });
 
     chrome.storage.sync.get({
         'bypassNativeDl': false
-    }, function (result) {
+    }, function(result) {
         $("input#bypassNativeDl").attr('checked', result.bypassNativeDl);
     });
 
     chrome.storage.sync.get({
         'splittingSize': 50
-    }, function (result) {
+    }, function(result) {
         $("input#splittingSize").val(result.splittingSize);
     });
 
     chrome.storage.sync.get({
         'torrentHost': "utb"
-    }, function (result) {
+    }, function(result) {
         $("select#torrentHost").val(result.torrentHost);
     });
 
     var version = chrome.runtime.getManifest().version;
     $('#version').html(version);
 
-    getDownloads(function () {
+    getDownloads(function() {
         var target = window.location.hash.substr(1);
         scroll(target);
     });
-    getAccount(function () {
+    getAccount(function() {
         var target = $('#' + window.location.hash.substr(1));
         scroll(target);
     });
 
 });
 
-$(function () {
-    $('a[href*=#]:not([href=#])').click(function () {
+$(function() {
+    $('a[href*=#]:not([href=#])').click(function() {
         if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
             var target = $(this.hash);
             target = target.length ? target : $('[id=' + this.hash.slice(1) + ']');
@@ -62,7 +62,7 @@ function scroll(target) {
     }
 }
 
-$("button#save").click(function () {
+$("button#save").click(function() {
     var warningPercentage = $("input#warningPercentage").val();
     var warningDays = $("input#warningDays").val();
     var bypassNativeDl = $("input#bypassNativeDl").is(':checked');
@@ -104,17 +104,17 @@ function displayMessage(cls, message) {
     messageContainer.animate({
         top: "+=75px",
         opacity: 1
-    }, 200, function () {
-        setTimeout(function () {
+    }, 200, function() {
+        setTimeout(function() {
             messageContainer.animate({
                 top: "-=75px",
                 opacity: 1
-            }, 200, function(){
+            }, 200, function() {
                 messageContainer.removeClass(cls);
-            })
+            });
         }, 750);
     });
-};
+}
 
 
 function success() {
@@ -136,7 +136,7 @@ function api(url, callback) {
             withCredentials: true
         },
         success: callback,
-        error: function () {
+        error: function() {
             console.log("Could not reach real-debrid.com");
         }
     });
@@ -152,7 +152,7 @@ function downloadListDisabled() {
 
 function getAccount(callback) {
     var url = "https://real-debrid.com/api/account.php?out=json";
-    api(url, function (data) {
+    api(url, function(data) {
         if (data.error) {
             loginRequired();
         } else {
@@ -187,7 +187,7 @@ function getAccount(callback) {
 
 function getDownloads(callback) {
     var url = "https://real-debrid.com/api/downloads.php?out=json";
-    api(url, function (data) {
+    api(url, function(data) {
         if (data.error) {
             downloadListDisabled();
         } else {

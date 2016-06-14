@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="../css/options.css">
 
     <script type="text/javascript" src="/libs/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/libs/js/jquery.scrollTo.min.js"></script>
 </head>
 
 <body>
@@ -47,6 +46,27 @@
         <div class="row">
             <div class="contentbox">
                 <section>
+                    <h3>API</h3>
+                </section>
+                <hr>
+                <section>
+                    <form class="form-inline">
+                        <div class="fomgroup">
+                            <label for="apiKey">API Key</label>
+                            <input id="apiKey" name="apiKey" type="text" class="form-control" />
+                        </div>
+                        <p>
+                            The new <a href="https://api.real-debrid.com" target="_blank">Real-Debrid API</a> requires users to be authenticated. For this purpose, the extension requires your <b>API key</b>, which can be found at <a href="https://real-debrid.com/apitoken"
+                                target="_blank">https://real-debrid.com/apitoken</a>.
+                        </p>
+                        <p>
+                            <small>The API key is stored by Google Chrome and is <b>never</b> transfer to any third party. The extension is open source, so don't take my word for it and have a look at the <a href="https://github.com/JDevlieghere/Real-Debrid" target="_blank" >source code</a> yourself!</small>
+                        </p>
+                    </form>
+                </section>
+            </div>
+            <div class="contentbox">
+                <section>
                     <h3>Warnings</h3>
                 </section>
                 <hr>
@@ -63,6 +83,8 @@
                     </form>
                 </section>
             </div>
+        </div>
+        <div class="row">
             <div class="contentbox">
                 <section>
                     <h3>Downloads</h3>
@@ -124,7 +146,7 @@
                 </section>
             </div>
         </div>
-        <div class="row" id="limited">
+        <div class="row" id="limited" style="display: none;">
             <div class="contentbox">
                 <section>
                     <h3>Limited Hosters</h3>
@@ -147,7 +169,6 @@
                                 <th>Host</th>
                                 <th>Name</th>
                                 <th>Date</th>
-                                <th>Original</th>
                                 <th>Unrestricted</th>
                             </tr>
                         </thead>

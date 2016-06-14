@@ -14,6 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+var URL_CHANGELOG = 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md';
+var URL_MAGNET = 'https://api.real-debrid.com/rest/1.0/torrents/addMagnet';
+var URL_TOKEN = 'https://real-debrid.com/apitoken';
+var URL_TRAFFIC = "https://api.real-debrid.com/rest/1.0/traffic";
+var URL_UNRESTRICT = 'https://api.real-debrid.com/rest/1.0/unrestrict/link';
+var URL_USER = 'https://api.real-debrid.com/rest/1.0/user';
+
 var is = new Installer();
 var nf = new Notifier();
 var op = new Options();
@@ -149,8 +156,15 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     this.warnings = [];
     this.warningPercentage = warningPercentage;
     this.warningDays = warningDays;
+    this.apiKey = null;
 
     var that = this;
+
+    chrome.storage.sync.get({
+        'apiKey': ''
+    }, function(result) {
+        that.apiKey = result.apiKey;
+    });
 
     chrome.storage.local.get({
         warnings: []
@@ -171,15 +185,15 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
 
     this.urlHandler = function(url) {
         if (url.lastIndexOf('magnet:', 0) === 0) {
-            that.handleMagnet(url, function(success) {});
+            that.handleMagnet(url);
         } else {
             that.unrestrict(url, function(result) {
-                if (!result.error) {
-                    that.download(result);
+                if (result.download) {
+                    that.download(result.download);
                 } else if (result.error == 1) {
-                    nf.error("Please make sure you are logged in. Click here to go to real-debrid.com", function() {
+                    nf.error("Please make sure you have your API token set. Click here to go to real-debrid.com", function() {
                         chrome.tabs.create({
-                            url: 'https://real-debrid.com'
+                            url: URL_TOKEN
                         }, function() {});
                     });
                 } else {
@@ -190,14 +204,28 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.download = function(data) {
-        var downloadUrl = data.generated_links[0][2];
-        dm.download(downloadUrl);
+        dm.download(data);
     };
 
-    this.api = function(url, callback) {
+    this.post = function(url, data, callback) {
+        $.ajax({
+            type: "POST",
+            url: url + "?auth_token=" + that.apiKey,
+            dataType: 'json',
+            data: data,
+            crossDomain: true,
+            xhrFields: {
+                withCredentials: true
+            },
+            success: callback,
+            error: that.handleError
+        });
+    };
+
+    this.get = function(url, callback) {
         $.ajax({
             type: "GET",
-            url: url,
+            url: url + "?auth_token=" + that.apiKey,
             dataType: 'json',
             data: {},
             crossDomain: true,
@@ -205,121 +233,56 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
                 withCredentials: true
             },
             success: callback,
-            error: function() {
-                nf.error("Could not reach real-debrid.com");
+            error: that.handleError
+        });
+    };
+
+    this.handleError = function(result) {
+        if (result.status == 401) {
+            nf.error("Unable to authenticate with Real-Debrid. Please click here to set-up your API key.", nf.openOptions);
+        } else {
+            nf.error("Uh Oh. Real-Debrid API responded with: " + response.statusText + " (" + response.status + ")");
+        }
+    };
+
+    this.unrestrict = function(url, callback) {
+        that.post(URL_UNRESTRICT, {
+            link: url
+        }, callback);
+    };
+
+    this.account = function(callback) {
+        that.get(URL_USER, callback);
+    };
+
+    this.traffic = function(callback) {
+        that.get(URL_TRAFFIC, callback);
+    };
+
+    this.handleMagnet = function(magnetLink, callback) {
+        that.post(URL_MAGNET, {
+            magnet: magnetLink,
+            split: splittingSize,
+            host: torrentHost
+        }, function(result) {
+            if (result.uri) {
+                chrome.tabs.create({
+                    url: result.uri
+                });
+            } else {
+                nf.error('Error adding magnet');
             }
         });
     };
 
-    this.unrestrict = function(url, callback) {
-        var apiUrl = 'https://real-debrid.com/ajax/unrestrict.php?link=' + url;
-        that.api(apiUrl, callback);
-    };
-
-    this.account = function(callback) {
-        var apiUrl = 'https://real-debrid.com/api/account.php?out=json';
-        that.api(apiUrl, callback);
-    };
-
-    this.handleMagnet = function(magnetLink, callback) {
-        var torrentUrl = 'https://real-debrid.com/torrents';
-        var success = false;
-        $.post(torrentUrl, {
-                magnet: magnetLink,
-                splitting_size: splittingSize,
-                hoster: torrentHost
-            })
-            .done(function(data) {
-                //check if page has error container
-                if (data.indexOf('error-box') === -1) {
-                    var hashes = [],
-                        currentHashPosition;
-                    while (currentHashPosition !== -1) {
-                        currentHashPosition = data.indexOf("$('#link_");
-                        if (currentHashPosition !== -1) {
-                            data = data.substring(currentHashPosition + 9, data.length);
-                            var hash = data.substring(0, data.indexOf("'"));
-                            hashes.push(hash);
-                            data = data.substring(hash.length, data.length);
-                        }
-                    }
-                    //check for hashes --> no hash equals errors
-                    if (hashes.length) {
-                        //redirect to real debrid for further handling of the magnet
-                        chrome.tabs.create({
-                            url: torrentUrl
-                        });
-                        success = true;
-                    } else {
-                        nf.error('Could not add magnet to RD - try manually.');
-                    }
-                } else {
-                    //get errormessage
-                    var errorMessage = data.substring(data.indexOf('error-box') + 11, data.length);
-                    errorMessage = errorMessage.substring(0, errorMessage.indexOf('</div>'));
-                    nf.error(errorMessage);
-                }
-                //that.handleMagnetHashes(hashes, callback);
-            })
-            .fail(function(data) {
-                nf.error('Error while pushing the Magnet - ' + data.statusText);
-            }).always(function() {
-                callback(success);
-            });
-    };
-
-    // #############Keep this if there is a plan to add the UI to the page in a later version
-    // this.handleMagnetHashes = function (hashes, callback) {
-    //     var overlay = that.overlayInstance();
-    //     overlay.$title.append('<h2>Select your files</h2>');
-    //     $.each(hashes, function (i, currentHash) {
-    //         $.get('https://real-debrid.com/ajax/torrent_files.php?id=' + currentHash,
-    //             function (data) {
-    //                 overlay.$container.append(data);
-    //             }
-    //         );
-    //     });
-    //     overlay.show();
-    //     callback(true);
-    // };
-
-    // this.overlayInstance = function () {
-    //     var instance = {
-    //         $title: $('<div>'),
-    //         $container: $('<div style="width:600px;border-radius:4px;padding:10px;background:#fff;position:absolute;right:0;left:0;margin:30px auto;">'),
-    //         $overlay:  $('<div style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;background-color:rgba(0,0,0,0.2);">'),
-    //         show: function () {
-    //             this.$container.append(this.$title);
-    //             this.$overlay.append(this.$container);
-    //             $('body').append(this.$overlay);
-    //         },
-    //         hide: function(){
-    //             this.$overlay.hide( 500, function() {
-    //                 $(this).children().remove();
-    //                 $(this).remove();
-    //             });
-    //         }
-    //     }
-    //     return instance;
-    // }
-
-
-    this.checkHoster = function(hoster) {
-        var index = that.warnings.indexOf(hoster.name);
-        var total = parseFloat(hoster.limit) + parseFloat(hoster.additional_traffic);
-        var used = Math.round((parseFloat(hoster.downloaded) / total) * 100);
-        if (used >= that.warningPercentage && index === -1) {
-            nf.progress(hoster.name, "You have used " + used + "% of the available traffic.", used, nf.openOptions);
-            that.storeWarning(hoster.name);
-        } else if (used < that.percentage && index !== -1) {
-            that.removeWarning(index, 1);
-        }
-    };
-
     this.checkPremium = function(data) {
+        var today = new Date();
+        var expiration = new Date(data.expiration);
+        var daysLeft = Math.round(Math.abs((expiration.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)));
+
         var key = 'premium-left';
-        var daysLeft = Math.round(data[key] / (-1 * 24 * 60 * 60));
         var index = that.warnings.indexOf(key);
+
         if (daysLeft <= that.warningDays && index === -1) {
             nf.info("You have only " + daysLeft + " days left of premium. Click here to change warnings preferences.", nf.openOptions);
             that.storeWarning(key);
@@ -330,12 +293,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
 
     this.checkAccount = function() {
         that.account(function(result) {
-            if (!result.error) {
-                that.checkPremium(result);
-                $.each(result.limited, function(index, hoster) {
-                    that.checkHoster(hoster);
-                });
-            }
+            that.checkPremium(result);
         });
     };
 
@@ -447,13 +405,16 @@ function Installer() {
     this.onUpdate = function(prevVersion, currVersion) {
         var prevVersionDigits = prevVersion.split('.');
         var currVersionDigits = currVersion.split('.');
-        if (prevVersionDigits.length >= 2 && currVersionDigits.length >= 2 && prevVersionDigits[0] == currVersionDigits[0] && prevVersionDigits[1] == currVersionDigits[1]) {
+        if (prevVersionDigits.length >= 2 &&
+            currVersionDigits.length >= 2 &&
+            prevVersionDigits[0] == currVersionDigits[0] &&
+            prevVersionDigits[1] == currVersionDigits[1]) {
             console.log("Extension updated (bugfix) to version " + currVersion);
         } else {
             var message = "Extension updated to version " + currVersion + ". Click here to see all changes.";
             nf.info(message, function() {
                 chrome.tabs.create({
-                    url: 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md'
+                    url: URL_CHANGELOG
                 }, function() {});
             });
         }

@@ -1,3 +1,12 @@
+## 1.9.x
+
+Features:
+
+ - Support new Real-Debrid API
+ - Authentication using API token (https://real-debrid.com/apitoken)
+ - Upgraded to jQuery 3
+ - Temporarily removed warnings for limited hosters
+
 ## 1.8.x
 
 Features:

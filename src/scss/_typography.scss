@@ -1,27 +1,72 @@
-h1 {
-	font-size: 2em;
-	font-weight: bold;
-	margin: 0px
+
+body{
+	font-family:  $font-stack;
+	font-size: $font-size;
+	line-height: 1.5em;
 }
 
-h2 {
-	font-size: 1.5em;
+small {
+	font-size: .75rem;
+}
+
+hr{
+	margin-top:1rem;
+	margin-bottom:1rem;
+	border:0;
+	border-top:1px solid #eee
+}
+
+h1 {
+	font-size: 2rem;
 	font-weight: bold;
-	margin: 0px
+}
+
+
+a{
+	text-decoration: none;
+	color: $accent-color;
+}
+h2 {
+	font-size: 1.5rem;
+	font-weight: bold;
 }
 
 h3 {
-	font-size: 1.17em;
+	font-size: 1.17rem;
 	font-weight: bold;
-	margin: 0px
 }
 
 h5 {
-	font-size: .83em;
-	margin: 0px
+	font-size: .83rem;
 }
 
 h6 {
 	font-size: .75em;
-	margin: 0px
+}
+
+ul {
+	margin: 10px;
+	list-style-type: disc;
+	list-style-position: inside;
+}
+
+li {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+ol {
+	list-style-type: decimal;
+	list-style-position: inside;
+}
+
+ul ul, ol ul {
+	list-style-type: circle;
+	list-style-position: inside;
+	margin-left: 15px;
+}
+ol ol, ul ol {
+	list-style-type: lower-latin;
+	list-style-position: inside;
+	margin-left: 15px;
 }

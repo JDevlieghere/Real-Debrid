@@ -1,0 +1,23 @@
+#message-container{
+    width: 100%;
+    height: 4rem;
+    line-height: 4rem;
+    text-align: center;
+    background-color:white;
+    position: absolute;
+    z-index: 10;
+    font-weight: bold;
+    top: -4rem;
+    opacity: 0;
+}
+
+#message-container.success{
+    background-color: #d6ff9f;
+    color: #185d18;
+
+}
+
+#message-container.failure{
+    background-color: #ff9fa3;
+    color: #5d1818;
+}

@@ -120,20 +120,22 @@ $("button#save").click(function() {
 });
 
 
-function displayMessage(cls, message) {
+function displayMessage(className, message) {
     var messageContainer = $('#message-container');
-    messageContainer.addClass(cls);
+    messageContainer.addClass(className);
     messageContainer.html(message);
+    var height = messageContainer.outerHeight();
+
     messageContainer.animate({
-        top: "+=75px",
+        top: '+=' + height + 'px',
         opacity: 1
     }, 200, function() {
         setTimeout(function() {
             messageContainer.animate({
-                top: "-=75px",
+                top: '-=' + height + 'px',
                 opacity: 1
             }, 200, function() {
-                messageContainer.removeClass(cls);
+                messageContainer.removeClass(className);
             });
         }, 750);
     });

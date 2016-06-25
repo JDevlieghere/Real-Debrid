@@ -1,31 +1,6 @@
-$sidebar-color: #428bca;
+
 $sidebar-width: 250px;
 $logo: url("../img/logo.png");
-
-
-@-webkit-keyframes hover{
-    0%{
-        padding-left:15px;
-        background-color: transparent;
-    }
-    
-    100%{
-        padding-left:35px;
-        background-color: transparentize(darken($sidebar-color, 8%), 0.4);
-    }
-}
-
-@-webkit-keyframes hover-out{
-    0%{
-        padding-left:35px;
-        background-color: transparentize(darken($sidebar-color, 8%), 0.4);
-    }
-    
-    100%{
-        padding-left:15px;
-        background-color: transparent;
-    }
-}
 
 #sidebar{
     background-color: $sidebar-color;
@@ -35,20 +10,11 @@ $logo: url("../img/logo.png");
     top: 0px;
     bottom: 0px;
     left: 0px;
-    box-shadow: inset -5px 0px 5px 0px rgba(0,0,0,0.2);
 
     .brand{
         background-color: darken($sidebar-color, 10%);
-        //background-color: rgba(0,0,0,0.2);
         padding: 15px;
         color: white;
-        text-shadow: 0 0 5px  darken($sidebar-color,50%); 
-
-        h1{
-            margin: 0;
-            padding :0;
-            padding :0;
-        }
     }
 
     .footer {
@@ -81,8 +47,7 @@ $logo: url("../img/logo.png");
                 text-decoration: none;
                 font-weight: bold;
                 position: relative;
-                -webkit-animation: hover-out 0.3s 0s;
-                -webkit-animation-fill-mode: forwards;
+                transition: all 0.3s ease;
                 
                 i{
                     float:right;
@@ -92,8 +57,8 @@ $logo: url("../img/logo.png");
             
             a:hover{
                 position: relative;
-                -webkit-animation: hover 0.3s 0s;
-                -webkit-animation-fill-mode: forwards;
+                padding-left: 35px;
+                background-color: transparentize(darken($sidebar-color, 8%), 0.4);
             }
             
 

@@ -16,7 +16,7 @@ $brand-color: #428bca;
         padding-left:15px;
         background-color: transparent;
     }
-    
+
     100%{
         padding-left:35px;
         background-color: darken($background-color, 5%);
@@ -28,7 +28,7 @@ $brand-color: #428bca;
         padding-left:35px;
         background-color: darken($background-color, 5%);
     }
-    
+
     100%{
         padding-left:15px;
         background-color: transparent;
@@ -70,7 +70,7 @@ body{
             display: flex;
             margin: 0;
             padding: 0;
-            
+
             a{
                 flex: 1;
                 color: darken($brand-color,35%);
@@ -83,7 +83,7 @@ body{
                     float: right;
                 }
             }
-            
+
             a:hover{
                 position: relative;
                 -webkit-animation: hover 0.3s 0s;
@@ -101,4 +101,5 @@ body{
 
 
 
-@import "_typography.scss";
+@import "vars";
+@import "typography";

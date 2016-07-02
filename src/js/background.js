@@ -17,7 +17,7 @@ limitations under the License.
 var URL_CHANGELOG = 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md';
 var URL_MAGNET = 'https://api.real-debrid.com/rest/1.0/torrents/addMagnet';
 var URL_TOKEN = 'https://real-debrid.com/apitoken';
-var URL_TRAFFIC = 'https://api.real-debrid.com/rest/1.0/traffic';
+var URL_TRAFFIC = "https://api.real-debrid.com/rest/1.0/traffic";
 var URL_UNRESTRICT = 'https://api.real-debrid.com/rest/1.0/unrestrict/link';
 var URL_USER = 'https://api.real-debrid.com/rest/1.0/user';
 
@@ -176,36 +176,28 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     this.selectionHandler = function(selection) {
         var urls = selection.split(" ");
         var regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
-        var invalid;
         $.each(urls, function(index, url) {
             if (url.match(regex)) {
                 that.urlHandler(url);
-            } else {
-                invalid = 1;
             }
         });
-        if (invalid) {
-          nf.error("Selected text doesn't seem to contain valid download URL(s)");
-        }
     };
 
     this.urlHandler = function(url) {
         if (url.lastIndexOf('magnet:', 0) === 0) {
-            that.handleMagnet(url, function(result) {
-                if (result.uri) {
-                    chrome.tabs.create({
-                        url: result.uri + "?auth_token=" + that.apiKey
-                    });
-                } else {
-                    nf.error("Error adding magnet");
-                }
-            });
+            that.handleMagnet(url);
         } else {
             that.unrestrict(url, function(result) {
                 if (result.download) {
                     that.download(result.download);
+                } else if (result.error == 1) {
+                    nf.error("Please make sure you have your API token set. Click here to go to real-debrid.com", function() {
+                        chrome.tabs.create({
+                            url: URL_TOKEN
+                        }, function() {});
+                    });
                 } else {
-                    nf.error("Error adding download");
+                    nf.basic(result.message, url);
                 }
             });
         }
@@ -226,9 +218,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
                 withCredentials: true
             },
             success: callback,
-            error: function(e) {
-                      that.handleError(e.responseText);
-                    }
+            error: that.handleError
         });
     };
 
@@ -243,48 +233,15 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
                 withCredentials: true
             },
             success: callback,
-            error: function(e) {
-                      that.handleError(e.responseText);
-                    }
+            error: that.handleError
         });
     };
 
     this.handleError = function(result) {
-        var prased_result = $.parseJSON(result);
-        switch (prased_result.error_code) {
-          case -1:
-            nf.error("Real-Debrid internal error");
-            break;
-          case 8:
-          case 9:
+        if (result.status == 401) {
             nf.error("Unable to authenticate with Real-Debrid. Please click here to set-up your API key.", nf.openOptions);
-            break;
-          case 14:
-            nf.error("Account locked");
-            break;
-          case 15:
-            nf.error("Account not activated");
-            break;
-          case 16:
-            nf.error("Unsupported hoster");
-            break;
-          case 17:
-            nf.error("Hoster in maintenance");
-            break;
-          case 18:
-            nf.error("Hoster limit reached");
-            break;
-          case 19:
-            nf.error("Hoster temporarily unavailable");
-            break;
-          case 20:
-            nf.error("Hoster not available for free users");
-            break;
-          case 21:
-            nf.error("Too many active downloads");
-            break;
-          default:
-            nf.error("Uh Oh. Real-Debrid API responded with an unknown error");
+        } else {
+            nf.error("Uh Oh. Real-Debrid API responded with: " + response.statusText + " (" + response.status + ")");
         }
     };
 
@@ -307,7 +264,15 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
             magnet: magnetLink,
             split: splittingSize,
             host: torrentHost
-        }, callback);
+        }, function(result) {
+            if (result.uri) {
+                chrome.tabs.create({
+                    url: result.uri
+                });
+            } else {
+                nf.error('Error adding magnet');
+            }
+        });
     };
 
     this.checkPremium = function(data) {

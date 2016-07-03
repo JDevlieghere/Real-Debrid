@@ -52,11 +52,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 chrome.notifications.onClicked.addListener(nf.clickHandler);
 chrome.storage.onChanged.addListener(op.changeHandler);
 
+var downloadProgressId = 0;
+
 // Create Context Menu
 chrome.contextMenus.create({
     "title": "Download with Real-Debrid",
     "contexts": ["link", "selection"],
     "onclick": function(info) {
+        nf.progress(downloadProgressId,"Downloading...","",0);
         if (typeof info.selectionText !== "undefined") {
             rd.selectionHandler(info.selectionText);
         } else if (typeof info.linkUrl !== "undefined") {
@@ -204,6 +207,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
             });
         } else {
             if (url.match(regex)) {
+                nf.progress(downloadProgressId,"Downloading...",url,25);
                 that.unrestrictFolder(url, function(result) {
                   $.each(result, function(index, results) {
                     results = results.substring(0, results.indexOf('"')); // RD API seems to return some extra incorrectly formatted information
@@ -217,8 +221,10 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.urlHandlerExtension = function(url) {
+        nf.progress(downloadProgressId,"Downloading...",url,50);
         that.unrestrict(url, function(result) {
             if (result.download) {
+                nf.progress(downloadProgressId,"Downloading...",url,75);
                 that.download(result.download);
             } else {
                 nf.error("Error adding download");
@@ -394,8 +400,8 @@ function Notifier() {
         });
     };
 
-    this.progress = function(title, text, progress, onClicked) {
-        var id = ++that.notificationId;
+    this.progress = function(id, title, text, progress, onClicked) {
+        var id = id;
         var options = {
             iconUrl: "/icons/icon-128.png",
             type: "progress",
@@ -404,10 +410,15 @@ function Notifier() {
             priority: 1,
             progress: progress
         };
-        chrome.notifications.create("id_" + id, options, function(notificationId) {
-            if (onClicked) {
-                that.callbacks[notificationId] = onClicked;
-            }
+        chrome.notifications.create("prog_" + id, options, function(notificationId) {
+            // if (notificationId) {
+
+
+            window.prompt("Copy to clipboard: Ctrl+C, Enter", url);
+              // }
+            // if (onClicked) {
+            //     that.callbacks[notificationId] = onClicked;
+            // }
         });
     };
 
@@ -421,8 +432,8 @@ function Notifier() {
 
     this.clickHandler = function(notificationId) {
         if (that.callbacks[notificationId]) {
-            that.callbacks[notificationId]();
-            delete that.callbacks[notificationId];
+            // that.callbacks[notificationId]();
+            // delete that.callbacks[notificationId];
         }
     };
 
@@ -505,6 +516,8 @@ function DownloadManager(bypassNativeDl) {
                 active: false
             });
         }
+        nf.progress(downloadProgressId,"Downloading...",url,100);
+        downloadProgressId++;
     };
 
     this.checkComplete = function() {
@@ -533,4 +546,8 @@ function DownloadManager(bypassNativeDl) {
             rd.checkAccount();
         }
     };
+
+    this.copyUrl = function(url) {
+      window.prompt("Copy to clipboard: Ctrl+C, Enter", url);
+    }
 }

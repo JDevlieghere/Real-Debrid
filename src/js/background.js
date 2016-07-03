@@ -299,7 +299,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
             nf.error("Too many active downloads");
             break;
           default:
-            nf.error("Uh Oh. Real-Debrid API responded with an unknown error");
+            nf.error("Uh Oh. Real-Debrid API responded with an unknown error. Code #: " + prased_result.error_code);
         }
     };
 

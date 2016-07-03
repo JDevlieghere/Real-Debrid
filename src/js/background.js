@@ -19,6 +19,7 @@ var URL_MAGNET = 'https://api.real-debrid.com/rest/1.0/torrents/addMagnet';
 var URL_TOKEN = 'https://real-debrid.com/apitoken';
 var URL_TRAFFIC = 'https://api.real-debrid.com/rest/1.0/traffic';
 var URL_UNRESTRICT = 'https://api.real-debrid.com/rest/1.0/unrestrict/link';
+var URL_UNRESTRICT_FOLDER = 'https://api.real-debrid.com/rest/1.0/unrestrict/folder';
 var URL_USER = 'https://api.real-debrid.com/rest/1.0/user';
 
 var is = new Installer();
@@ -190,6 +191,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.urlHandler = function(url) {
+        var regex = new RegExp(/(\/folder\/)/ig);
         if (url.lastIndexOf('magnet:', 0) === 0) {
             that.handleMagnet(url, function(result) {
                 if (result.uri) {
@@ -201,14 +203,27 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
                 }
             });
         } else {
-            that.unrestrict(url, function(result) {
-                if (result.download) {
-                    that.download(result.download);
-                } else {
-                    nf.error("Error adding download");
-                }
-            });
+            if (url.match(regex)) {
+                that.unrestrictFolder(url, function(result) {
+                  $.each(result, function(index, results) {
+                    results = results.substring(0, results.indexOf('"')); // RD API seems to return some extra incorrectly formatted information
+                    that.urlHandlerExtension(results);
+                  });
+                });
+            } else {
+              that.urlHandlerExtension(url);
+            }
         }
+    };
+
+    this.urlHandlerExtension = function(url) {
+        that.unrestrict(url, function(result) {
+            if (result.download) {
+                that.download(result.download);
+            } else {
+                nf.error("Error adding download");
+            }
+        });
     };
 
     this.download = function(data) {
@@ -290,6 +305,12 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
 
     this.unrestrict = function(url, callback) {
         that.post(URL_UNRESTRICT, {
+            link: url
+        }, callback);
+    };
+
+    this.unrestrictFolder = function(url, callback) {
+        that.post(URL_UNRESTRICT_FOLDER, {
             link: url
         }, callback);
     };

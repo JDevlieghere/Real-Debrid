@@ -196,7 +196,8 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
             that.handleMagnet(url, function(result) {
                 if (result.uri) {
                     chrome.tabs.create({
-                        url: result.uri + "?auth_token=" + that.apiKey
+                        // url: result.uri + "?auth_token=" + that.apiKey
+                        url: "https://real-debrid.com/torrents"
                     });
                 } else {
                     nf.error("Error adding magnet");

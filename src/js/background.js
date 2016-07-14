@@ -50,16 +50,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
 });
 chrome.notifications.onClicked.addListener(nf.clickHandler);
+chrome.notifications.onButtonClicked.addListener(nf.buttonClickHandler);
 chrome.storage.onChanged.addListener(op.changeHandler);
-
-var downloadProgressId = 0;
 
 // Create Context Menu
 chrome.contextMenus.create({
     "title": "Download with Real-Debrid",
     "contexts": ["link", "selection"],
     "onclick": function(info) {
-        nf.progress(downloadProgressId,"Downloading...","",0);
         if (typeof info.selectionText !== "undefined") {
             rd.selectionHandler(info.selectionText);
         } else if (typeof info.linkUrl !== "undefined") {
@@ -162,6 +160,8 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     this.warningDays = warningDays;
     this.apiKey = null;
 
+    this.folderSize = 0;
+
     var that = this;
 
     chrome.storage.sync.get({
@@ -194,6 +194,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.urlHandler = function(url) {
+        nf.progress(++nf.progressNotificationId,"Downloading...","Getting URL",0);
         var regex = new RegExp(/(\/folder\/)/ig);
         if (url.lastIndexOf('magnet:', 0) === 0) {
             that.handleMagnet(url, function(result) {
@@ -207,8 +208,9 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
             });
         } else {
             if (url.match(regex)) {
-                nf.progress(downloadProgressId,"Downloading...",url,25);
                 that.unrestrictFolder(url, function(result) {
+                  nf.progress(nf.progressNotificationId,"Downloading...",url,25);
+                  that.folderSize = result.length;
                   $.each(result, function(index, results) {
                     results = results.substring(0, results.indexOf('"')); // RD API seems to return some extra incorrectly formatted information
                     that.urlHandlerExtension(results);
@@ -221,10 +223,9 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.urlHandlerExtension = function(url) {
-        nf.progress(downloadProgressId,"Downloading...",url,50);
+        nf.progress(nf.progressNotificationId,"Downloading...",url,50);
         that.unrestrict(url, function(result) {
             if (result.download) {
-                nf.progress(downloadProgressId,"Downloading...",url,75);
                 that.download(result.download);
             } else {
                 nf.error("Error adding download");
@@ -380,7 +381,9 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
 function Notifier() {
 
     this.notificationId = 0;
+    this.progressNotificationId = 0;
     this.callbacks = {};
+    this.urls = [];
 
     var that = this;
 
@@ -400,7 +403,7 @@ function Notifier() {
         });
     };
 
-    this.progress = function(id, title, text, progress, onClicked) {
+    this.progress = function(id, title, text, progress) {
         var id = id;
         var options = {
             iconUrl: "/icons/icon-128.png",
@@ -410,20 +413,25 @@ function Notifier() {
             priority: 1,
             progress: progress
         };
-        chrome.notifications.create("prog_" + id, options, function(notificationId) {
-            // if (notificationId) {
 
-
-            window.prompt("Copy to clipboard: Ctrl+C, Enter", url);
-              // }
-            // if (onClicked) {
-            //     that.callbacks[notificationId] = onClicked;
-            // }
-        });
+        if (progress == 100) {
+            options.buttons = [{ title: "Copy URL To Clipboard", iconUrl: "/icons/copy_18dp_2x.png" }];
+        }
+        if (progress > 0) {
+            chrome.notifications.update("prog_" + id, options, function(){
+                  if (progress == 100 && rd.folderSize <= 1){
+                      that.urls.push({id: "prog_" + id, url: text});
+                  }
+            });
+        } else {
+          chrome.notifications.create("prog_" + id, options);
+          nf.urls.push({id: "prog_" + nf.progressNotificationId, url: ""});
+        }
     };
 
     this.error = function(text, callback) {
         that.basic("Error", text, callback);
+        chrome.notifications.clear("prog_" + nf.progressNotificationId);
     };
 
     this.info = function(text, callback) {
@@ -432,9 +440,16 @@ function Notifier() {
 
     this.clickHandler = function(notificationId) {
         if (that.callbacks[notificationId]) {
-            // that.callbacks[notificationId]();
-            // delete that.callbacks[notificationId];
+            that.callbacks[notificationId]();
+            delete that.callbacks[notificationId];
         }
+    };
+
+    this.buttonClickHandler = function(notificationId, buttonIndex) {
+        var clicked = that.urls.find(function(obj) {
+                                        return obj.id == notificationId;
+                                      });
+        clipboard.copy(clicked.url);
     };
 
     this.openOptions = function() {
@@ -516,8 +531,18 @@ function DownloadManager(bypassNativeDl) {
                 active: false
             });
         }
-        nf.progress(downloadProgressId,"Downloading...",url,100);
-        downloadProgressId++;
+
+        if(!rd.folderSize) {
+            nf.progress(nf.progressNotificationId,"Success!",url,100);
+        } else if (rd.folderSize == 1) {
+            var l = nf.urls.length - 1;
+            nf.urls[l].url += url;
+            nf.progress(nf.progressNotificationId,"Success!","All folder files successfully added to download queue",100);
+        } else {
+            rd.folderSize--;
+            var l = nf.urls.length - 1;
+            nf.urls[l].url += url + "\n";
+        }
     };
 
     this.checkComplete = function() {
@@ -546,8 +571,4 @@ function DownloadManager(bypassNativeDl) {
             rd.checkAccount();
         }
     };
-
-    this.copyUrl = function(url) {
-      window.prompt("Copy to clipboard: Ctrl+C, Enter", url);
-    }
 }

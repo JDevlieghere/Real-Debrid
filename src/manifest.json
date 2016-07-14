@@ -23,6 +23,7 @@
   "background": {
     "scripts": [
       "/libs/js/jquery.min.js",
+      "/libs/js/clipboard.min.js",
       "js/background.js"
     ]
   },

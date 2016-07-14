@@ -50,6 +50,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
 });
 chrome.notifications.onClicked.addListener(nf.clickHandler);
+chrome.notifications.onButtonClicked.addListener(nf.buttonClickHandler);
 chrome.storage.onChanged.addListener(op.changeHandler);
 
 // Create Context Menu
@@ -159,6 +160,8 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     this.warningDays = warningDays;
     this.apiKey = null;
 
+    this.folderSize = 0;
+
     var that = this;
 
     chrome.storage.sync.get({
@@ -191,6 +194,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.urlHandler = function(url) {
+        nf.progress(++nf.progressNotificationId,"Downloading...","Getting URL",0);
         var regex = new RegExp(/(\/folder\/)/ig);
         if (url.lastIndexOf('magnet:', 0) === 0) {
             that.handleMagnet(url, function(result) {
@@ -206,6 +210,8 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
         } else {
             if (url.match(regex)) {
                 that.unrestrictFolder(url, function(result) {
+                  nf.progress(nf.progressNotificationId,"Downloading...",url,25);
+                  that.folderSize = result.length;
                   $.each(result, function(index, results) {
                     results = results.substring(0, results.indexOf('"')); // RD API seems to return some extra incorrectly formatted information
                     that.urlHandlerExtension(results);
@@ -218,6 +224,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.urlHandlerExtension = function(url) {
+        nf.progress(nf.progressNotificationId,"Downloading...",url,50);
         that.unrestrict(url, function(result) {
             if (result.download) {
                 that.download(result.download);
@@ -375,7 +382,9 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
 function Notifier() {
 
     this.notificationId = 0;
+    this.progressNotificationId = 0;
     this.callbacks = {};
+    this.urls = [];
 
     var that = this;
 
@@ -395,8 +404,8 @@ function Notifier() {
         });
     };
 
-    this.progress = function(title, text, progress, onClicked) {
-        var id = ++that.notificationId;
+    this.progress = function(id, title, text, progress) {
+        var id = id;
         var options = {
             iconUrl: "/icons/icon-128.png",
             type: "progress",
@@ -405,15 +414,25 @@ function Notifier() {
             priority: 1,
             progress: progress
         };
-        chrome.notifications.create("id_" + id, options, function(notificationId) {
-            if (onClicked) {
-                that.callbacks[notificationId] = onClicked;
-            }
-        });
+
+        if (progress == 100) {
+            options.buttons = [{ title: "Copy URL To Clipboard", iconUrl: "/icons/copy_18dp_2x.png" }];
+        }
+        if (progress > 0) {
+            chrome.notifications.update("prog_" + id, options, function(){
+                  if (progress == 100 && rd.folderSize <= 1){
+                      that.urls.push({id: "prog_" + id, url: text});
+                  }
+            });
+        } else {
+          chrome.notifications.create("prog_" + id, options);
+          nf.urls.push({id: "prog_" + nf.progressNotificationId, url: ""});
+        }
     };
 
     this.error = function(text, callback) {
         that.basic("Error", text, callback);
+        chrome.notifications.clear("prog_" + nf.progressNotificationId);
     };
 
     this.info = function(text, callback) {
@@ -425,6 +444,13 @@ function Notifier() {
             that.callbacks[notificationId]();
             delete that.callbacks[notificationId];
         }
+    };
+
+    this.buttonClickHandler = function(notificationId, buttonIndex) {
+        var clicked = that.urls.find(function(obj) {
+                                        return obj.id == notificationId;
+                                      });
+        clipboard.copy(clicked.url);
     };
 
     this.openOptions = function() {
@@ -505,6 +531,18 @@ function DownloadManager(bypassNativeDl) {
                 url: url,
                 active: false
             });
+        }
+
+        if(!rd.folderSize) {
+            nf.progress(nf.progressNotificationId,"Success!",url,100);
+        } else if (rd.folderSize == 1) {
+            var l = nf.urls.length - 1;
+            nf.urls[l].url += url;
+            nf.progress(nf.progressNotificationId,"Success!","All folder files successfully added to download queue",100);
+        } else {
+            rd.folderSize--;
+            var l = nf.urls.length - 1;
+            nf.urls[l].url += url + "\n";
         }
     };
 

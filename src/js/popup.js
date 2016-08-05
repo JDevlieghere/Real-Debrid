@@ -1,24 +1,18 @@
-$('a.opt').click(function() {
+var pageIdentifier = 'popup';
+
+$('#options').click(function() {
     var optionsUrl = chrome.extension.getURL('html/options.html');
-    var fullUrl = optionsUrl + this.hash;
     chrome.tabs.query({
         url: optionsUrl
     }, function(tabs) {
-        if (tabs.length) {
-            chrome.tabs.update(tabs[0].id, {
-                active: true,
-                url: fullUrl
-            });
-        } else {
-            chrome.tabs.create({
-                url: fullUrl
-            });
-        }
+        chrome.tabs.create({
+            url: optionsUrl
+        });
         window.close();
     });
 });
 
-$("a#download").click(function() {
+$(".downloadPage").click(function() {
     chrome.tabs.getSelected(null, function(tab) {
         chrome.runtime.sendMessage({
             url: tab.url
@@ -26,3 +20,24 @@ $("a#download").click(function() {
         window.close();
     });
 });
+
+$(".unrestrictUrl").click(function() {
+    var unrestrictUrl = $("input#unrestrictUrl").val();
+    var regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
+    if (unrestrictUrl.match(regex)) {
+        chrome.tabs.getSelected(null, function(tab) {
+            chrome.runtime.sendMessage({
+                url: unrestrictUrl
+            }, function() {});
+            window.close();
+        });
+    } else {
+        $('#unrestrictUrl').parent().addClass('is-invalid');
+    }
+});
+
+var load = function() {
+    getDownloads();
+};
+
+$(document).ready(load);

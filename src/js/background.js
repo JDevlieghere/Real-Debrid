@@ -143,7 +143,7 @@ function Options() {
         });
 
         chrome.storage.sync.get({
-            'torrentHost': "utb"
+            'torrentHost': "1fichier.com"
         }, function(result) {
             that.values.torrentHost = result.torrentHost;
             that.checkReady();
@@ -200,7 +200,6 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
             that.handleMagnet(url, function(result) {
                 if (result.uri) {
                     chrome.tabs.create({
-                        // url: result.uri + "?auth_token=" + that.apiKey
                         url: "https://real-debrid.com/torrents"
                     });
                 } else {
@@ -332,11 +331,12 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.handleMagnet = function(magnetLink, callback) {
-        that.post(URL_MAGNET, {
-            magnet: magnetLink,
-            split: splittingSize,
-            host: torrentHost
-        }, callback);
+        alert(torrentHost)
+        // that.post(URL_MAGNET, {
+        //     magnet: magnetLink,
+        //     split: splittingSize,
+        //     host: torrentHost
+        // }, callback);
     };
 
     this.checkPremium = function(data) {

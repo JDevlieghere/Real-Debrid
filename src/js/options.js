@@ -37,10 +37,10 @@ var load = function() {
     });
 
     chrome.storage.sync.get({
-        'torrentHost': false
+        'torrentHost': "1fichier.com"
     }, function(result) {
         getTorrentHosters(function(){
-            $('#' + result.torrentHost)[0].parentNode.MaterialRadio.check();
+            $('label[hoster="' + result.torrentHost + '"]')[0].MaterialRadio.check();
         });
     });
 
@@ -84,7 +84,7 @@ $("button#save").click(function() {
     var warningDays = $("input#warningDays").val();
     var bypassNativeDl = $("input#bypassNativeDl").parent().hasClass('is-checked');
     var splittingSize = $("input#splittingSize").val();
-    var torrentHost = $("input.torrentHost").parent(".is-checked").attr("for"); //should find a better way to read this
+    var torrentHost = $("input.torrentHost").parent(".is-checked").attr("hoster"); // TODO: Find a better way to read this
 
     chrome.storage.sync.set({
         'apiKey': apiKey
@@ -165,8 +165,8 @@ function getTorrentHosters(callback) {
         for(var i = 0; i < data.length; i++) {
             hoster = data[i].host.substring(0, data[i].host.indexOf('.'));
             html += `
-                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="` + hoster + `">
-                        <input type="radio" class="torrentHost mdl-radio__button" name="hoster" id="` + hoster + `"  value="` + hoster + `">
+                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="` + hoster + `" hoster="` + data[i].host + `">
+                        <input type="radio" class="torrentHost mdl-radio__button" name="hoster" id="` + hoster + `">
                         <span class="mdl-radio__label">` + data[i].host + `</span>
                     </label>
                     <div class="mdl-layout-spacer spacer"></div>

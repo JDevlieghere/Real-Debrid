@@ -73,7 +73,11 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
 			createdDate = moment(data[i].generated).format('D MMM YYYY, H:mm');
 			prettySize = bytesToSize(data[i].filesize);
 			hoster = data[i].host.substring(0, data[i].host.indexOf('.'));
+
 			if (pageIdentifier == 'options') {
+				if (!data[i].mimeType) { // Sometimes RD API would return null values
+					data[i].mimeType = "";
+				}
 				switch(data[i].mimeType) {
 					case(data[i].mimeType.match(/mp4|matroska|wmv|avi|flv/) || {}).input:
 						mime = "video";
@@ -95,7 +99,6 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
 						break;
 				}
 			}
-
 			html += `<div class="recentCards mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col">`;
 			if (pageIdentifier == 'options') {
 				html += `

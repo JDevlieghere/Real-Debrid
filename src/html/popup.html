@@ -33,26 +33,27 @@
 			<main class="mdl-layout__content">
 				<section class="mdl-layout__tab-panel is-active" id="download">
 					<div class="page-content">
-						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored downloadPage">
-							Unrestrict current page
-						</button>
-
-						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-							<input class="mdl-textfield__input form-control" type="text" id="unrestrictUrl" name="unrestrictUrl">
-							<label class="mdl-textfield__label" for="unrestrictUrl">Unrestrict a URL</label>
-							<span class="mdl-textfield__error">Please insert a valid URL</span>
-						</div>
-						<button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect unrestrictUrl">
-							get
-						</button>
+						<section class="login-required">
+							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored downloadPage">
+								Unrestrict current page
+							</button>
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+								<input class="mdl-textfield__input form-control" type="text" id="unrestrictUrl" name="unrestrictUrl">
+								<label class="mdl-textfield__label" for="unrestrictUrl">Unrestrict a URL</label>
+								<span class="mdl-textfield__error">Please insert a valid URL</span>
+							</div>
+							<button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect unrestrictUrl">
+								get
+							</button>
+						</section>
 					</div>
 				</section>
 				<section class="mdl-layout__tab-panel" id="recent">
 					<div class="page-content">
-            <div class="recentDownloads">
-              <section class="login-required">
-              </section>
-            </div>
+			            <div class="recentDownloads">
+			              <section class="login-required">
+			              </section>
+			            </div>
 					</div>
 				</section>
 			</main>

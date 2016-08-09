@@ -22,6 +22,9 @@ var URL_UNRESTRICT = 'https://api.real-debrid.com/rest/1.0/unrestrict/link';
 var URL_UNRESTRICT_FOLDER = 'https://api.real-debrid.com/rest/1.0/unrestrict/folder';
 var URL_USER = 'https://api.real-debrid.com/rest/1.0/user';
 
+var NORMAL_NOTIFICATION_PREFIX = 'id_';
+var PROGRESS_NOTIFICATION_PREFIX = 'prog_';
+
 var is = new Installer();
 var nf = new Notifier();
 var op = new Options();
@@ -185,7 +188,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
             if (url.match(regex)) {
                 that.urlHandler(url);
             } else {
-                invalid = 1;
+                invalid = true;
             }
         });
         if (invalid) {
@@ -209,15 +212,15 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
         } else {
             if (url.match(regex)) {
                 that.unrestrictFolder(url, function(result) {
-                  nf.progress(nf.progressNotificationId,"Downloading...",url,25);
-                  that.folderSize = result.length;
-                  $.each(result, function(index, results) {
-                    results = results.substring(0, results.indexOf('"')); // RD API seems to return some extra incorrectly formatted information
-                    that.urlHandlerExtension(results);
-                  });
+                    nf.progress(nf.progressNotificationId,"Downloading...",url,25);
+                    that.folderSize = result.length;
+                    $.each(result, function(index, results) {
+                        results = results.substring(0, results.indexOf('"')); // RD API seems to return some extra incorrectly formatted information
+                        that.urlHandlerExtension(results);
+                    });
                 });
             } else {
-              that.urlHandlerExtension(url);
+                that.urlHandlerExtension(url);
             }
         }
     };
@@ -331,12 +334,11 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     };
 
     this.handleMagnet = function(magnetLink, callback) {
-        alert(torrentHost)
-        // that.post(URL_MAGNET, {
-        //     magnet: magnetLink,
-        //     split: splittingSize,
-        //     host: torrentHost
-        // }, callback);
+        that.post(URL_MAGNET, {
+            magnet: magnetLink,
+            split: splittingSize,
+            host: torrentHost
+        }, callback);
     };
 
     this.checkPremium = function(data) {
@@ -397,7 +399,7 @@ function Notifier() {
             message: text,
             priority: 1
         };
-        chrome.notifications.create("id_" + id, options, function(notificationId) {
+        chrome.notifications.create(NORMAL_NOTIFICATION_PREFIX + id, options, function(notificationId) {
             if (onClicked) {
                 that.callbacks[notificationId] = onClicked;
             }
@@ -419,20 +421,20 @@ function Notifier() {
             options.buttons = [{ title: "Copy URL To Clipboard", iconUrl: "/icons/copy_18dp_2x.png" }];
         }
         if (progress > 0) {
-            chrome.notifications.update("prog_" + id, options, function(){
+            chrome.notifications.update(PROGRESS_NOTIFICATION_PREFIX + id, options, function(){
                   if (progress == 100 && rd.folderSize <= 1){
-                      that.urls.push({id: "prog_" + id, url: text});
+                      that.urls.push({id: PROGRESS_NOTIFICATION_PREFIX + id, url: text});
                   }
             });
         } else {
-          chrome.notifications.create("prog_" + id, options);
-          nf.urls.push({id: "prog_" + nf.progressNotificationId, url: ""});
+          chrome.notifications.create(PROGRESS_NOTIFICATION_PREFIX + id, options);
+          nf.urls.push({id: PROGRESS_NOTIFICATION_PREFIX + nf.progressNotificationId, url: ""});
         }
     };
 
     this.error = function(text, callback) {
         that.basic("Error", text, callback);
-        chrome.notifications.clear("prog_" + nf.progressNotificationId);
+        chrome.notifications.clear(PROGRESS_NOTIFICATION_PREFIX + nf.progressNotificationId);
     };
 
     this.info = function(text, callback) {

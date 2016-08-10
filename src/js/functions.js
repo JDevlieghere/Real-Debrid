@@ -7,19 +7,19 @@ function bytesToSize(bytes) { // from http://scratch99.com/web-development/javas
 }
 
 function loginRequired() {
-	$('section.login-required').children().hide();
-	$('section.login-required').append('<h6 class="mdl-color--red-600 mdl-color-text--white"><i class="material-icons">error</i><span>Could not reach Real-Debrid API.</span></h6>');
+	$("section.login-required").children().hide();
+	$("section.login-required").append('<h6 class="mdl-color--red-600 mdl-color-text--white"><i class="material-icons">error</i><span>Could not reach Real-Debrid API.</span></h6>');
 }
 
 function success() {
-	var notification = document.querySelector('.mdl-js-snackbar');
+	var notification = document.querySelector(".mdl-js-snackbar");
 	notification.MaterialSnackbar.showSnackbar({
 		message: 'Your options have been saved'
 	});
 }
 
 function failure() {
-	var notification = document.querySelector('.mdl-js-snackbar');
+	var notification = document.querySelector(".mdl-js-snackbar");
 	notification.MaterialSnackbar.showSnackbar({
 		message: 'Could not save your options'
 	});
@@ -38,7 +38,7 @@ function api(url, callback) {
 		$.ajax({
 			type: "GET",
 			url: url + "?auth_token=" + key,
-			dataType: 'json',
+			dataType: "json",
 			data: {},
 			crossDomain: true,
 			xhrFields: {
@@ -62,19 +62,19 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
 			hoster,
 			originalUrl,
 			unrestrictedUrl;
-		if (pageIdentifier == 'options') {
-			originalUrl = 'Original URL';
-			unrestrictedUrl = 'Unrestricted';
-		} else if (pageIdentifier == 'popup') {
-			originalUrl = '<i class="material-icons">file_download</i>';
-			unrestrictedUrl = '<i class="material-icons">cloud_download</i>';
+		if (pageIdentifier == "options") {
+			originalUrl = "Original URL";
+			unrestrictedUrl = "Unrestricted";
+		} else if (pageIdentifier == "popup") {
+			originalUrl = "<i class="material-icons">file_download</i>";
+			unrestrictedUrl = "<i class="material-icons">cloud_download</i>";
 		}
 		for(var i = 0; i < data.length; i++) {
 			createdDate = moment(data[i].generated).format('D MMM YYYY, H:mm');
 			prettySize = bytesToSize(data[i].filesize);
 			hoster = data[i].host.substring(0, data[i].host.indexOf('.'));
 
-			if (pageIdentifier == 'options') {
+			if (pageIdentifier == "options") {
 				if (!data[i].mimeType) { // Sometimes RD API would return null values
 					data[i].mimeType = "";
 				}
@@ -100,7 +100,7 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
 				}
 			}
 			html += `<div class="recentCards mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col">`;
-			if (pageIdentifier == 'options') {
+			if (pageIdentifier == "options") {
 				html += `
 	              <div class="mdl-card__title mdl-color--grey-100 mdl-card--border">
 	                <h2 class="mdl-card__title-text"><img src="/icons/mime/` + mime + `.png" title="` + data[i].mimeType + `"></h2>
@@ -127,6 +127,6 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
             </div>
         	`;
 		}
-		$('.recentDownloads section').append(html);
+		$(".recentDownloads section").append(html);
 	});
 }

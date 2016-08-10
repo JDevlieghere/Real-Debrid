@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-var URL_CHANGELOG = 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md';
-var URL_MAGNET = 'https://api.real-debrid.com/rest/1.0/torrents/addMagnet';
-var URL_TOKEN = 'https://real-debrid.com/apitoken';
-var URL_TRAFFIC = 'https://api.real-debrid.com/rest/1.0/traffic';
-var URL_UNRESTRICT = 'https://api.real-debrid.com/rest/1.0/unrestrict/link';
-var URL_UNRESTRICT_FOLDER = 'https://api.real-debrid.com/rest/1.0/unrestrict/folder';
-var URL_USER = 'https://api.real-debrid.com/rest/1.0/user';
+var URL_CHANGELOG = "https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md";
+var URL_MAGNET = "https://api.real-debrid.com/rest/1.0/torrents/addMagnet";
+var URL_TOKEN = "https://real-debrid.com/apitoken";
+var URL_TRAFFIC = "https://api.real-debrid.com/rest/1.0/traffic";
+var URL_UNRESTRICT = "https://api.real-debrid.com/rest/1.0/unrestrict/link";
+var URL_UNRESTRICT_FOLDER = "https://api.real-debrid.com/rest/1.0/unrestrict/folder";
+var URL_USER = "https://api.real-debrid.com/rest/1.0/user";
 
-var NORMAL_NOTIFICATION_PREFIX = 'id_';
-var PROGRESS_NOTIFICATION_PREFIX = 'prog_';
+var NORMAL_NOTIFICATION_PREFIX = "id_";
+var PROGRESS_NOTIFICATION_PREFIX = "prog_";
 
 var is = new Installer();
 var nf = new Notifier();
@@ -71,12 +71,12 @@ chrome.contextMenus.create({
 
 function Options() {
     this.values = {};
-    this.onLoaded = document.createEvent('Event');
+    this.onLoaded = document.createEvent("Event");
 
     var that = this;
 
     this.addListener = function(handler) {
-        document.addEventListener('onLoaded', handler, false);
+        document.addEventListener("onLoaded", handler, false);
     };
 
     this.isReady = function() {
@@ -107,7 +107,7 @@ function Options() {
     };
 
     this.init = function() {
-        that.onLoaded.initEvent('onLoaded', true, true);
+        that.onLoaded.initEvent("onLoaded", true, true);
         that.values.warningPercentage = null;
         that.values.warningDays = null;
         that.values.bypassNativeDl = null;
@@ -199,7 +199,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     this.urlHandler = function(url) {
         nf.progress(++nf.progressNotificationId,"Downloading...","Getting URL",0);
         var regex = new RegExp(/(\/folder\/)/ig);
-        if (url.lastIndexOf('magnet:', 0) === 0) {
+        if (url.lastIndexOf("magnet:", 0) === 0) {
             that.handleMagnet(url, function(result) {
                 if (result.uri) {
                     chrome.tabs.create({
@@ -244,7 +244,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
         $.ajax({
             type: "POST",
             url: url + "?auth_token=" + that.apiKey,
-            dataType: 'json',
+            dataType: "json",
             data: data,
             crossDomain: true,
             xhrFields: {
@@ -261,7 +261,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
         $.ajax({
             type: "GET",
             url: url + "?auth_token=" + that.apiKey,
-            dataType: 'json',
+            dataType: "json",
             data: {},
             crossDomain: true,
             xhrFields: {
@@ -346,7 +346,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
         var expiration = new Date(data.expiration);
         var daysLeft = Math.round(Math.abs((expiration.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)));
 
-        var key = 'premium-left';
+        var key = "premium-left";
         var index = that.warnings.indexOf(key);
 
         if (daysLeft <= that.warningDays && index === -1) {
@@ -456,7 +456,7 @@ function Notifier() {
     };
 
     this.openOptions = function() {
-        var optionsUrl = chrome.extension.getURL('html/options.html');
+        var optionsUrl = chrome.extension.getURL("html/options.html");
         chrome.tabs.query({
             url: optionsUrl
         }, function(tabs) {

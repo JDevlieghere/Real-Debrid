@@ -101,7 +101,7 @@ a.mdl-button {
 
 .mdl-card {
 	overflow: visible; /* A fix for tooltip not showing */
-  z-index: auto;
+	z-index: auto;
 }
 
 .mdl-card .mdl-card__title {
@@ -121,13 +121,13 @@ a.mdl-button {
 }
 
 .mdl-card #avatar {
-  float:left;
-  margin-right: 40px;
+	float:left;
+	margin-right: 40px;
 }
 
 .mdl-card #avatar img {
-  border-radius: 50%;
-  max-height: 128px;
+	border-radius: 50%;
+	max-height: 128px;
 }
 
 .mdl-card .key {

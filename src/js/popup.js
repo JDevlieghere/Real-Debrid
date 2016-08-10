@@ -1,7 +1,7 @@
-var pageIdentifier = 'popup';
+var pageIdentifier = "popup";
 
-$('#options').click(function() {
-    var optionsUrl = chrome.extension.getURL('html/options.html');
+$("#options").click(function() {
+    var optionsUrl = chrome.extension.getURL("html/options.html");
     chrome.tabs.query({
         url: optionsUrl
     }, function(tabs) {
@@ -32,7 +32,7 @@ $(".unrestrictUrl").click(function() {
             window.close();
         });
     } else {
-        $('#unrestrictUrl').parent().addClass('is-invalid');
+        $('#unrestrictUrl').parent().addClass("is-invalid");
     }
 });
 

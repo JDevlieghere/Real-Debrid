@@ -1,39 +1,39 @@
 var URL_TRAFFIC = "https://api.real-debrid.com/rest/1.0/traffic";
-var URL_USER = 'https://api.real-debrid.com/rest/1.0/user';
-var URL_TORRENT_HOSTERS = 'https://api.real-debrid.com/rest/1.0/torrents/availableHosts';
-var pageIdentifier = 'options';
+var URL_USER = "https://api.real-debrid.com/rest/1.0/user";
+var URL_TORRENT_HOSTERS = "https://api.real-debrid.com/rest/1.0/torrents/availableHosts";
+var pageIdentifier = "options";
 
 var load = function() {
     chrome.storage.sync.get({
         'apiKey': ''
     }, function(result) {
-        $("input#apiKey").val(result.apiKey).parent().addClass('is-dirty');
+        $("input#apiKey").val(result.apiKey).parent().addClass("is-dirty");
     });
 
     chrome.storage.sync.get({
         'warningPercentage': 75
     }, function(result) {
-        $("input#warningPercentage").val(result.warningPercentage).parent().addClass('is-dirty');
+        $("input#warningPercentage").val(result.warningPercentage).parent().addClass("is-dirty");
     });
 
     chrome.storage.sync.get({
         'warningDays': 7
     }, function(result) {
-        $("input#warningDays").val(result.warningDays).parent().addClass('is-dirty');
+        $("input#warningDays").val(result.warningDays).parent().addClass("is-dirty");
     });
 
     chrome.storage.sync.get({
         'bypassNativeDl': false
     }, function(result) {
         if (result.bypassNativeDl) {
-          $('#bypassNativeDlLabel').get(0).MaterialSwitch.on();
+          $("#bypassNativeDlLabel").get(0).MaterialSwitch.on();
         }
     });
 
     chrome.storage.sync.get({
         'splittingSize': 50
     }, function(result) {
-        $("input#splittingSize").val(result.splittingSize).parent().addClass('is-dirty');
+        $("input#splittingSize").val(result.splittingSize).parent().addClass("is-dirty");
     });
 
     chrome.storage.sync.get({
@@ -45,11 +45,11 @@ var load = function() {
     });
 
     var version = chrome.runtime.getManifest().version;
-    $('#version').html(version);
+    $("#version").html(version);
 
     // A fix for first time setup
-    $('section.login-required').children().show();
-    $('section.login-required h6').hide();
+    $("section.login-required").children().show();
+    $("section.login-required h6").hide();
 
     getDownloads();
     // getTraffic();
@@ -62,10 +62,10 @@ $(function() {
     var currentPosition = 0;
     var target = 0;
     var header = 0;
-    $('.mdl-layout__content').bind("scroll", function () {
-        currentPosition = $('.mdl-layout__content').scrollTop();
+    $(".mdl-layout__content").bind("scroll", function () {
+        currentPosition = $(".mdl-layout__content").scrollTop();
     });
-    $('.mdl-navigation__link').click(function() {
+    $(".mdl-navigation__link").click(function() {
         header = $(".mdl-layout__header").height();
         target = $("#" + this.id + "Card").offset();
         target = target.top - header - 10 + currentPosition;
@@ -74,7 +74,7 @@ $(function() {
 });
 
 function scroll(target) {
-    $('.mdl-layout__content').stop().animate({ scrollTop: target }, "slow");
+    $(".mdl-layout__content").stop().animate({ scrollTop: target }, "slow");
     return false;
 }
 
@@ -82,7 +82,7 @@ $("button#save").click(function() {
     var apiKey = $("input#apiKey").val();
     var warningPercentage = $("input#warningPercentage").val();
     var warningDays = $("input#warningDays").val();
-    var bypassNativeDl = $("input#bypassNativeDl").parent().hasClass('is-checked');
+    var bypassNativeDl = $("input#bypassNativeDl").parent().hasClass("is-checked");
     var splittingSize = $("input#splittingSize").val();
     var torrentHost = $("input.torrentHost").parent(".is-checked").attr("hoster"); // TODO: Find a better way to read this
 
@@ -121,11 +121,11 @@ $("button#save").click(function() {
 function getAccount(callback) {
     api(URL_USER, function(data) {
         var expirationDate = moment(data.expiration).format('D MMMM YYYY, H:mm') + " (" + moment(data.expiration, "YYYYMMDD").fromNow() + ")";
-        $('#avatar').html('<img src="' + data.avatar + '">');
-        $('#username').html(data.username);
-        $('#email').html(data.email);
-        $('#points').html(data.points);
-        $('#expiration').html(expirationDate);
+        $("#avatar").html('<img src="' + data.avatar + '">');
+        $("#username").html(data.username);
+        $("#email").html(data.email);
+        $("#points").html(data.points);
+        $("#expiration").html(expirationDate);
     });
 }
 
@@ -172,7 +172,7 @@ function getTorrentHosters(callback) {
                     <div class="mdl-layout-spacer spacer"></div>
                     `;
         }
-        $('.mdl-card #torrentHosters').html(html);
+        $(".mdl-card #torrentHosters").html(html);
         componentHandler.upgradeAllRegistered(); // Required by MDL
         callback();
     });

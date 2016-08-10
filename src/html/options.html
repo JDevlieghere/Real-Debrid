@@ -1,206 +1,207 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Real-Debrid Extension</title>
-		<meta name="description" content="">
-		<link rel="stylesheet" href="/css/fonts.css">
-		<link rel="stylesheet" href="/libs/css/material.min.css">
-		<script type="text/javascript" src="/libs/js/jquery.min.js"></script>
-		<link rel="stylesheet" href="/css/options.css">
-	</head>
 
-	<body>
-		<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-			<header class="mdl-layout__header mdl-color--blue-grey-900 mdl-layout__header--waterfall mdl-color-text--white">
-				<div class="mdl-layout__header-row">
-					<span class="mdl-layout-title">Real-Debrid Extension</span>
-					<div class="mdl-layout-spacer"></div>
-					<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="save" name="Save">
+<head>
+    <meta charset="utf-8">
+    <title>Real-Debrid Extension</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="/libs/css/material.min.css">
+    <script type="text/javascript" src="/libs/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/options.css">
+</head>
+
+<body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header mdl-color--blue-grey-900 mdl-layout__header--waterfall mdl-color-text--white">
+            <div class="mdl-layout__header-row">
+                <span class="mdl-layout-title">Real-Debrid Extension</span>
+                <div class="mdl-layout-spacer"></div>
+                <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="save" name="Save">
 						<i class="material-icons">save</i>
 					</button>
-					<div class="mdl-tooltip" for="save">Save</div>
-				</div>
-			</header>
-			<div class="mdl-layout__drawer">
-				<header class="mdl-layout__header--seamed mdl-color--blue-grey-900 mdl-color-text--white">
-					<span class="mdl-layout-title">
+                <div class="mdl-tooltip" for="save">Save</div>
+            </div>
+        </header>
+        <div class="mdl-layout__drawer">
+            <header class="mdl-layout__header--seamed mdl-color--blue-grey-900 mdl-color-text--white">
+                <span class="mdl-layout-title">
 						<img src="/icons/icon-64.png"> Real Debrid
 					</span>
-				</header>
-				<nav class="mdl-navigation mdl-color--blue-grey-800">
-					<a class="mdl-navigation__link" id="options">
-						<i class="material-icons">settings</i>Options</a>
-					<a class="mdl-navigation__link" id="account">
-						<i class="material-icons">account_box</i>Account Info</a>
-					<a class="mdl-navigation__link" id="recent">
-						<i class="material-icons">file_download</i>Download List</a>
-					<a class="mdl-navigation__link" id="about">
-						<i class="material-icons">help</i>About</a>
-				</nav>
-			</div>
-			<main class="mdl-layout__content mdl-color--grey-100">
-				<div class="mdl-grid content">
+            </header>
+            <nav class="mdl-navigation mdl-color--blue-grey-800">
+                <a class="mdl-navigation__link" id="options">
+                    <i class="material-icons">settings</i>Options</a>
+                <a class="mdl-navigation__link" id="account">
+                    <i class="material-icons">account_box</i>Account Info</a>
+                <a class="mdl-navigation__link" id="recent">
+                    <i class="material-icons">file_download</i>Download List</a>
+                <a class="mdl-navigation__link" id="about">
+                    <i class="material-icons">help</i>About</a>
+            </nav>
+        </div>
+        <main class="mdl-layout__content mdl-color--grey-100">
+            <div class="mdl-grid content">
 
-					<div class="mdl-card mdl-shadow--2dp mdl-cell" id="optionsCard">
-						<div class="mdl-card__title mdl-color--blue-grey-600">
-							<h2 class="mdl-card__title-text">API</h2>
-						</div>
-						<div class="mdl-card__supporting-text mdl-color-text--grey-600">
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<input class="mdl-textfield__input form-control" type="text" id="apiKey" name="apiKey">
-								<label class="mdl-textfield__label" for="apiKey">API Key</label>
-							</div>
-							<small>The API key is stored by Google Chrome and is <b>never</b> transfer to any third party. <br>
+                <div class="mdl-card mdl-shadow--2dp mdl-cell" id="optionsCard">
+                    <div class="mdl-card__title mdl-color--blue-grey-600">
+                        <h2 class="mdl-card__title-text">API</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input form-control" type="text" id="apiKey" name="apiKey">
+                            <label class="mdl-textfield__label" for="apiKey">API Key</label>
+                        </div>
+                        <small>The API key is stored by Google Chrome and is <b>never</b> transfer to any third party. <br>
 								The extension is open source, so don't take my word for it and have a look at the
 								<a href="https://github.com/JDevlieghere/Real-Debrid" target="_blank">source code</a> yourself!</small>
-						</div>
-						<div class="mdl-card__actions mdl-card--border">
-							<a href="https://real-debrid.com/apitoken" class="mdl-button mdl-js-button mdl-js-ripple-effect" target="_blank">Get API Token</a>
-						</div>
-						<div class="mdl-card__menu">
-							<a href="https://api.real-debrid.com" target="_blank">
-						    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="apiHelp">
+                    </div>
+                    <div class="mdl-card__actions mdl-card--border">
+                        <a href="https://real-debrid.com/apitoken" class="mdl-button mdl-js-button mdl-js-ripple-effect" target="_blank">Get API Token</a>
+                    </div>
+                    <div class="mdl-card__menu">
+                        <a href="https://api.real-debrid.com" target="_blank">
+                            <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="apiHelp">
 						      <i class="material-icons">help</i>
 						    </button>
-							</a>
-							<div class="mdl-tooltip" for="apiHelp">
-								The Real-Debrid API requires users to be authenticated via API key.<br>
-								For more information click this button.
-							</div>
-					  </div>
-					</div>
+                        </a>
+                        <div class="mdl-tooltip" for="apiHelp">
+                            The Real-Debrid API requires users to be authenticated via API key.<br> For more information click this button.
+                        </div>
+                    </div>
+                </div>
 
-					<div class="mdl-card mdl-shadow--2dp mdl-cell" id="downloadsCard">
-						<div class="mdl-card__title mdl-color--blue-grey-600">
-							<h2 class="mdl-card__title-text">Downloads</h2>
-						</div>
-						<div class="mdl-card__supporting-text mdl-color-text--grey-600">
-							<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" id="bypassNativeDlLabel" for="bypassNativeDl">
+                <div class="mdl-card mdl-shadow--2dp mdl-cell" id="downloadsCard">
+                    <div class="mdl-card__title mdl-color--blue-grey-600">
+                        <h2 class="mdl-card__title-text">Downloads</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+                        <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" id="bypassNativeDlLabel" for="bypassNativeDl">
 								<input type="checkbox" id="bypassNativeDl" class="mdl-switch__input">
 								<span class="mdl-switch__label">Bypass Chrome Downloads API</span>
 							</label>
-						</div>
-						<div class="mdl-card__menu">
-					    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="downloadsHelp">
+                    </div>
+                    <div class="mdl-card__menu">
+                        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="downloadsHelp">
 					      <i class="material-icons">help</i>
 					    </button>
-							<div class="mdl-tooltip" for="downloadsHelp">
-								Enable this feature when you are using a third-party download manager to prevent forceful creation of a download in Chrome.
-							</div>
-					  </div>
-					</div>
+                        <div class="mdl-tooltip" for="downloadsHelp">
+                            Enable this feature when you are using a third-party download manager to prevent forceful creation of a download in Chrome.
+                        </div>
+                    </div>
+                </div>
 
-					<div class="mdl-card mdl-shadow--2dp mdl-cell" id="torrentsCard">
-						<div class="mdl-card__title mdl-color--blue-grey-600">
-							<h2 class="mdl-card__title-text">Torrents</h2>
-						</div>
-						<div class="mdl-card__supporting-text mdl-color-text--grey-600">
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="splittingSize">
-								<label class="mdl-textfield__label" for="splittingSize">Splitting size (GB)</label>
-								<span class="mdl-textfield__error">Input is not a number!</span>
-							</div>
-							Hoster
-							<div class="mdl-layout-spacer spacer"></div>
-							<div id="torrentHosters"></div>
-						</div>
-					</div>
+                <div class="mdl-card mdl-shadow--2dp mdl-cell" id="torrentsCard">
+                    <div class="mdl-card__title mdl-color--blue-grey-600">
+                        <h2 class="mdl-card__title-text">Torrents</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="splittingSize">
+                            <label class="mdl-textfield__label" for="splittingSize">Splitting size (GB)</label>
+                            <span class="mdl-textfield__error">Input is not a number!</span>
+                        </div>
+                        Hoster
+                        <div class="mdl-layout-spacer spacer"></div>
+                        <div id="torrentHosters"></div>
+                    </div>
+                </div>
 
-					<!-- -->
+                <!-- -->
 
-					<div class="info-cards mdl-card mdl-shadow--2dp mdl-cell" id="warningCard">
-						<div class="mdl-card__title mdl-color--blue-grey-600">
-							<h2 class="mdl-card__title-text">Warnings</h2>
-						</div>
-						<div class="mdl-card__supporting-text mdl-color-text--grey-600">
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<input class="mdl-textfield__input form-control" type="text" id="warningPercentage" name="warningPercentage" pattern="-?[0-9]*(\.[0-9]+)?">
-								<label class="mdl-textfield__label" for="warningPercentage">Limited hoster usage (%)</label>
-								<span class="mdl-textfield__error">Input is not a number!</span>
-							</div>
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<input class="mdl-textfield__input form-control" type="text" id="warningDays" name="warningDays" pattern="-?[0-9]*(\.[0-9]+)?">
-								<label class="mdl-textfield__label" for="warningDays">Premium expiration (days)</label>
-								<span class="mdl-textfield__error">Input is not a number!</span>
-							</div>
-						</div>
-					</div>
+                <div class="info-cards mdl-card mdl-shadow--2dp mdl-cell" id="warningCard">
+                    <div class="mdl-card__title mdl-color--blue-grey-600">
+                        <h2 class="mdl-card__title-text">Warnings</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input form-control" type="text" id="warningPercentage" name="warningPercentage" pattern="-?[0-9]*(\.[0-9]+)?">
+                            <label class="mdl-textfield__label" for="warningPercentage">Limited hoster usage (%)</label>
+                            <span class="mdl-textfield__error">Input is not a number!</span>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input form-control" type="text" id="warningDays" name="warningDays" pattern="-?[0-9]*(\.[0-9]+)?">
+                            <label class="mdl-textfield__label" for="warningDays">Premium expiration (days)</label>
+                            <span class="mdl-textfield__error">Input is not a number!</span>
+                        </div>
+                    </div>
+                </div>
 
-					<div class="info-cards mdl-card mdl-shadow--2dp mdl-cell mdl-cell--8-col" id="accountCard">
-						<div class="mdl-card__title mdl-color--blue-grey-600">
-							<h2 class="mdl-card__title-text">Account Info</h2>
-						</div>
-						<div class="mdl-card__supporting-text mdl-color-text--grey-600">
-							<section class="login-required accountInfo">
-								<div id="avatar"></div>
-								<div class="row">
-									<div class="key">Username:</div>
-									<div class="value" id="username"></div>
-								</div>
-								<div class="mdl-layout-spacer spacer"></div>
-								<div class="row">
-									<div class="key">E-mail:</div>
-									<div class="value" id="email"></div>
-								</div>
-								<div class="mdl-layout-spacer spacer"></div>
-								<div class="row">
-									<div class="key">Points:</div>
-									<div class="value" id="points"></div>
-								</div>
-								<div class="mdl-layout-spacer spacer"></div>
-								<div class="row">
-									<div class="key">Expiration:</div>
-									<div class="value" id="expiration"></div>
-								</div>
-							</section>
-						</div>
-					</div>
+                <div class="info-cards mdl-card mdl-shadow--2dp mdl-cell mdl-cell--8-col" id="accountCard">
+                    <div class="mdl-card__title mdl-color--blue-grey-600">
+                        <h2 class="mdl-card__title-text">Account Info</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+                        <section class="login-required accountInfo">
+                            <div id="avatar"></div>
+                            <div class="row">
+                                <div class="key">Username:</div>
+                                <div class="value" id="username"></div>
+                            </div>
+                            <div class="mdl-layout-spacer spacer"></div>
+                            <div class="row">
+                                <div class="key">E-mail:</div>
+                                <div class="value" id="email"></div>
+                            </div>
+                            <div class="mdl-layout-spacer spacer"></div>
+                            <div class="row">
+                                <div class="key">Points:</div>
+                                <div class="value" id="points"></div>
+                            </div>
+                            <div class="mdl-layout-spacer spacer"></div>
+                            <div class="row">
+                                <div class="key">Expiration:</div>
+                                <div class="value" id="expiration"></div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
 
-					<!-- -->
+                <!-- -->
 
-					<div class="mdl-card mdl-shadow--2dp info-cards mdl-cell mdl-cell--12-col" id="recentCard">
-						<div class="mdl-card__title mdl-color--blue-grey-600">
-							<h2 class="mdl-card__title-text">Latest Downloads</h2>
-						</div>
-						<div class="mdl-card__supporting-text mdl-color-text--grey-600 recentDownloads">
-							<section class="login-required">
-							</section>
-						</div>
-					</div>
+                <div class="mdl-card mdl-shadow--2dp info-cards mdl-cell mdl-cell--12-col" id="recentCard">
+                    <div class="mdl-card__title mdl-color--blue-grey-600">
+                        <h2 class="mdl-card__title-text">Latest Downloads</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text mdl-color-text--grey-600 recentDownloads">
+                        <section class="login-required">
+                        </section>
+                    </div>
+                </div>
 
-				</div>
+            </div>
 
-				<footer class="mdl-mini-footer" id="aboutCard">
-					<div class="mdl-mini-footer__left-section">
-							<div class="mdl-logo">About</div>
-							<ul class="mdl-mini-footer__link-list">
-								<li>
-									<a href="https://chrome.google.com/webstore/detail/real-debrid/llhbijccmpenbpkblhmeeneeaangebej" target="_blank">
-										<button class="mdl-color-text--white mdl-mini-footer__social-btn mdl-button mdl-js-button mdl-js-ripple-effect" id="webstore"></button> Extension on Chrome Web Store
-									</a>
-								</li>
-								<li>
-									<a href="https://github.com/JDevlieghere/Real-Debrid" target="_blank">
-										<button class="mdl-color-text--white mdl-mini-footer__social-btn mdl-button mdl-js-button mdl-js-ripple-effect" id="git"></button> Source code on Github
-									</a>
-								</li>
-								<li>
-									<button class="mdl-color-text--white mdl-mini-footer__social-btn mdl-button mdl-js-button mdl-js-ripple-effect" id="twitter"></button>
-									Follow <a href="https://twitter.com/JDevlieghere" target="_blank">@JDevlieghere</a> and <a href="https://twitter.com/StefanPante" target="_blank">@StefanPante</a>
-								</li>
-							</ul>
-					</div>
-				</footer>
-				<div class="mdl-js-snackbar mdl-snackbar">
-				  <div class="mdl-snackbar__text"></div>
-				  <button class="mdl-snackbar__action" type="button"></button>
-				</div>
-			</main>
-		</div>
-		<script type="text/javascript" src="/libs/js/material.min.js"></script>
-		<script type="text/javascript" src="/libs/js/moment.min.js"></script>
-		<script type="text/javascript" src="/js/functions.js"></script>
-		<script type="text/javascript" src="/js/options.js"></script>
-	</body>
+            <footer class="mdl-mini-footer" id="aboutCard">
+                <div class="mdl-mini-footer__left-section">
+                    <div class="mdl-logo">About</div>
+                    <ul class="mdl-mini-footer__link-list">
+                        <li>
+                            <a href="https://chrome.google.com/webstore/detail/real-debrid/llhbijccmpenbpkblhmeeneeaangebej" target="_blank">
+                                <button class="mdl-color-text--white mdl-mini-footer__social-btn mdl-button mdl-js-button mdl-js-ripple-effect" id="webstore"></button> Extension on Chrome Web Store
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/JDevlieghere/Real-Debrid" target="_blank">
+                                <button class="mdl-color-text--white mdl-mini-footer__social-btn mdl-button mdl-js-button mdl-js-ripple-effect" id="git"></button> Source code on Github
+                            </a>
+                        </li>
+                        <li>
+                            <button class="mdl-color-text--white mdl-mini-footer__social-btn mdl-button mdl-js-button mdl-js-ripple-effect" id="twitter"></button> Follow <a href="https://twitter.com/JDevlieghere" target="_blank">@JDevlieghere</a> and
+                            <a href="https://twitter.com/StefanPante" target="_blank">@StefanPante</a>
+                        </li>
+                    </ul>
+                </div>
+            </footer>
+            <div class="mdl-js-snackbar mdl-snackbar">
+                <div class="mdl-snackbar__text"></div>
+                <button class="mdl-snackbar__action" type="button"></button>
+            </div>
+        </main>
+    </div>
+    <script type="text/javascript" src="/libs/js/material.min.js"></script>
+    <script type="text/javascript" src="/libs/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/functions.js"></script>
+    <script type="text/javascript" src="/js/options.js"></script>
+</body>
+
 </html>

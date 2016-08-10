@@ -26,7 +26,7 @@ var load = function() {
         'bypassNativeDl': false
     }, function(result) {
         if (result.bypassNativeDl) {
-          $("#bypassNativeDlLabel").get(0).MaterialSwitch.on();
+            $("#bypassNativeDlLabel").get(0).MaterialSwitch.on();
         }
     });
 
@@ -39,7 +39,7 @@ var load = function() {
     chrome.storage.sync.get({
         'torrentHost': "1fichier.com"
     }, function(result) {
-        getTorrentHosters(function(){
+        getTorrentHosters(function() {
             $('label[hoster="' + result.torrentHost + '"]')[0].MaterialRadio.check();
         });
     });
@@ -62,7 +62,7 @@ $(function() {
     var currentPosition = 0;
     var target = 0;
     var header = 0;
-    $(".mdl-layout__content").bind("scroll", function () {
+    $(".mdl-layout__content").bind("scroll", function() {
         currentPosition = $(".mdl-layout__content").scrollTop();
     });
     $(".mdl-navigation__link").click(function() {
@@ -74,7 +74,9 @@ $(function() {
 });
 
 function scroll(target) {
-    $(".mdl-layout__content").stop().animate({ scrollTop: target }, "slow");
+    $(".mdl-layout__content").stop().animate({
+        scrollTop: target
+    }, "slow");
     return false;
 }
 
@@ -162,7 +164,7 @@ function getTorrentHosters(callback) {
     api(URL_TORRENT_HOSTERS, function(data) {
         var html = "", // preventing 'undefined' error
             hoster;
-        for(var i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             hoster = data[i].host.substring(0, data[i].host.indexOf('.'));
             html += `
                     <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="` + hoster + `" hoster="` + data[i].host + `">

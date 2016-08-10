@@ -1,65 +1,65 @@
 <!doctype html>
 <html lang="en">
 
-	<head>
-		<meta charset="utf-8">
-		<title>Real-Debrid Extension</title>
-		<meta name="description" content="">
-		<link rel="stylesheet" href="/css/fonts.css">
-		<link rel="stylesheet" href="/libs/css/material.min.css">
-		<script type="text/javascript" src="/libs/js/jquery.min.js"></script>
-		<link rel="stylesheet" href="/css/popup.css">
-	</head>
+<head>
+    <meta charset="utf-8">
+    <title>Real-Debrid Extension</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="/libs/css/material.min.css">
+    <script type="text/javascript" src="/libs/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/popup.css">
+</head>
 
-	<body>
-		<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
-			<header class="mdl-layout__header mdl-color--blue-grey-900">
-				<div class="mdl-layout__header-row">
-					<span class="mdl-layout-title">
+<body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
+        <header class="mdl-layout__header mdl-color--blue-grey-900">
+            <div class="mdl-layout__header-row">
+                <span class="mdl-layout-title">
 						<img src="/icons/icon-64.png"> Real Debrid
 					</span>
-          <div class="mdl-layout-spacer"></div>
-          <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="options">
+                <div class="mdl-layout-spacer"></div>
+                <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="options">
             <i class="material-icons">settings</i>
           </button>
-          <div class="mdl-tooltip" for="options">Options</div>
-				</div>
-				<!-- Tabs -->
-				<div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--blue-grey-900">
-					<a href="#download" class="mdl-layout__tab is-active">Download</a>
-					<a href="#recent" class="mdl-layout__tab">Latest Downloads</a>
-				</div>
-			</header>
-			<main class="mdl-layout__content">
-				<section class="mdl-layout__tab-panel is-active" id="download">
-					<div class="page-content">
-						<section class="login-required">
-							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored downloadPage">
+                <div class="mdl-tooltip" for="options">Options</div>
+            </div>
+            <!-- Tabs -->
+            <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--blue-grey-900">
+                <a href="#download" class="mdl-layout__tab is-active">Download</a>
+                <a href="#recent" class="mdl-layout__tab">Latest Downloads</a>
+            </div>
+        </header>
+        <main class="mdl-layout__content">
+            <section class="mdl-layout__tab-panel is-active" id="download">
+                <div class="page-content">
+                    <section class="login-required">
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored downloadPage">
 								Unrestrict current page
 							</button>
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<input class="mdl-textfield__input form-control" type="text" id="unrestrictUrl" name="unrestrictUrl">
-								<label class="mdl-textfield__label" for="unrestrictUrl">Unrestrict a URL</label>
-								<span class="mdl-textfield__error">Please insert a valid URL</span>
-							</div>
-							<button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect unrestrictUrl">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input form-control" type="text" id="unrestrictUrl" name="unrestrictUrl">
+                            <label class="mdl-textfield__label" for="unrestrictUrl">Unrestrict a URL</label>
+                            <span class="mdl-textfield__error">Please insert a valid URL</span>
+                        </div>
+                        <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect unrestrictUrl">
 								get
 							</button>
-						</section>
-					</div>
-				</section>
-				<section class="mdl-layout__tab-panel" id="recent">
-					<div class="page-content">
-			            <div class="recentDownloads">
-			              <section class="login-required">
-			              </section>
-			            </div>
-					</div>
-				</section>
-			</main>
-		</div>
-		<script type="text/javascript" src="/libs/js/material.min.js"></script>
-    	<script type="text/javascript" src="/libs/js/moment.min.js"></script>
-		<script type="text/javascript" src="/js/functions.js"></script>
-		<script type="text/javascript" src="/js/popup.js"></script>
-	</body>
+                    </section>
+                </div>
+            </section>
+            <section class="mdl-layout__tab-panel" id="recent">
+                <div class="page-content">
+                    <div class="recentDownloads">
+                        <section class="login-required">
+                        </section>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script type="text/javascript" src="/libs/js/material.min.js"></script>
+    <script type="text/javascript" src="/libs/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/functions.js"></script>
+    <script type="text/javascript" src="/js/popup.js"></script>
+</body>

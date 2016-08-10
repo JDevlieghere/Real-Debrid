@@ -7,9 +7,9 @@ An unobtrusive Google Chrome extension for Real-Debrid. The extension allows you
 
 ## Screenshots
 
-![Screenshot](https://lh4.googleusercontent.com/Jdj3bwzRxQ-hbQW0bk8x-ThSVKo3EfhLH6n299WQ1NL7OgUuwdS3V8TbmtypK3KPznzQgRjnmg=s640-h400-e365-rw)
+![Screenshot](http://i.imgur.com/hMwoToj.png)
 
-![Options](http://i.imgur.com/mXwif4y.png)
+![Options](http://i.imgur.com/zgxrlnF.png)
 
 ## FAQ
 

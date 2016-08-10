@@ -6,6 +6,7 @@
 .grunt
 .idea
 .sass-cache
+.jsbeautifyrc
 node_modules
 dist
 *.zip
@@ -13,4 +14,3 @@ dist
 *.css.map
 ehthumbs.db
 Thumbs.db
-src/css

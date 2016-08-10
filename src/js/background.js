@@ -14,12 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-var URL_CHANGELOG = 'https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md';
-var URL_MAGNET = 'https://api.real-debrid.com/rest/1.0/torrents/addMagnet';
-var URL_TOKEN = 'https://real-debrid.com/apitoken';
+var URL_CHANGELOG = "https://github.com/JDevlieghere/Real-Debrid/blob/master/CHANGELOG.md";
+var URL_MAGNET = "https://api.real-debrid.com/rest/1.0/torrents/addMagnet";
+var URL_TOKEN = "https://real-debrid.com/apitoken";
 var URL_TRAFFIC = "https://api.real-debrid.com/rest/1.0/traffic";
-var URL_UNRESTRICT = 'https://api.real-debrid.com/rest/1.0/unrestrict/link';
-var URL_USER = 'https://api.real-debrid.com/rest/1.0/user';
+var URL_UNRESTRICT = "https://api.real-debrid.com/rest/1.0/unrestrict/link";
+var URL_UNRESTRICT_FOLDER = "https://api.real-debrid.com/rest/1.0/unrestrict/folder";
+var URL_USER = "https://api.real-debrid.com/rest/1.0/user";
+
+var NORMAL_NOTIFICATION_PREFIX = "id_";
+var PROGRESS_NOTIFICATION_PREFIX = "prog_";
 
 var is = new Installer();
 var nf = new Notifier();
@@ -49,6 +53,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
 });
 chrome.notifications.onClicked.addListener(nf.clickHandler);
+chrome.notifications.onButtonClicked.addListener(nf.buttonClickHandler);
 chrome.storage.onChanged.addListener(op.changeHandler);
 
 // Create Context Menu
@@ -66,12 +71,12 @@ chrome.contextMenus.create({
 
 function Options() {
     this.values = {};
-    this.onLoaded = document.createEvent('Event');
+    this.onLoaded = document.createEvent("Event");
 
     var that = this;
 
     this.addListener = function(handler) {
-        document.addEventListener('onLoaded', handler, false);
+        document.addEventListener("onLoaded", handler, false);
     };
 
     this.isReady = function() {
@@ -102,7 +107,7 @@ function Options() {
     };
 
     this.init = function() {
-        that.onLoaded.initEvent('onLoaded', true, true);
+        that.onLoaded.initEvent("onLoaded", true, true);
         that.values.warningPercentage = null;
         that.values.warningDays = null;
         that.values.bypassNativeDl = null;
@@ -141,7 +146,7 @@ function Options() {
         });
 
         chrome.storage.sync.get({
-            'torrentHost': "utb"
+            'torrentHost': "1fichier.com"
         }, function(result) {
             that.values.torrentHost = result.torrentHost;
             that.checkReady();
@@ -157,6 +162,8 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     this.warningPercentage = warningPercentage;
     this.warningDays = warningDays;
     this.apiKey = null;
+
+    this.folderSize = 0;
 
     var that = this;
 
@@ -176,31 +183,57 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
     this.selectionHandler = function(selection) {
         var urls = selection.split(" ");
         var regex = new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
+        var invalid;
         $.each(urls, function(index, url) {
             if (url.match(regex)) {
                 that.urlHandler(url);
+            } else {
+                invalid = true;
             }
         });
+        if (invalid) {
+          nf.error("Selected text doesn't seem to contain valid download URL(s)");
+        }
     };
 
     this.urlHandler = function(url) {
-        if (url.lastIndexOf('magnet:', 0) === 0) {
-            that.handleMagnet(url);
-        } else {
-            that.unrestrict(url, function(result) {
-                if (result.download) {
-                    that.download(result.download);
-                } else if (result.error == 1) {
-                    nf.error("Please make sure you have your API token set. Click here to go to real-debrid.com", function() {
-                        chrome.tabs.create({
-                            url: URL_TOKEN
-                        }, function() {});
+        nf.progress(++nf.progressNotificationId,"Downloading...","Getting URL",0);
+        var regex = new RegExp(/(\/folder\/)/ig);
+        if (url.lastIndexOf("magnet:", 0) === 0) {
+            that.handleMagnet(url, function(result) {
+                if (result.uri) {
+                    chrome.tabs.create({
+                        url: "https://real-debrid.com/torrents"
                     });
                 } else {
-                    nf.basic(result.message, url);
+                    nf.error("Error adding magnet");
                 }
             });
+        } else {
+            if (url.match(regex)) {
+                that.unrestrictFolder(url, function(result) {
+                    nf.progress(nf.progressNotificationId,"Downloading...",url,25);
+                    that.folderSize = result.length;
+                    $.each(result, function(index, results) {
+                        results = results.substring(0, results.indexOf('"')); // RD API seems to return some extra incorrectly formatted information
+                        that.urlHandlerExtension(results);
+                    });
+                });
+            } else {
+                that.urlHandlerExtension(url);
+            }
         }
+    };
+
+    this.urlHandlerExtension = function(url) {
+        nf.progress(nf.progressNotificationId,"Downloading...",url,50);
+        that.unrestrict(url, function(result) {
+            if (result.download) {
+                that.download(result.download);
+            } else {
+                nf.error("Error adding download");
+            }
+        });
     };
 
     this.download = function(data) {
@@ -211,14 +244,16 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
         $.ajax({
             type: "POST",
             url: url + "?auth_token=" + that.apiKey,
-            dataType: 'json',
+            dataType: "json",
             data: data,
             crossDomain: true,
             xhrFields: {
                 withCredentials: true
             },
             success: callback,
-            error: that.handleError
+            error: function(e) {
+                      that.handleError(e.responseText);
+                    }
         });
     };
 
@@ -226,27 +261,66 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
         $.ajax({
             type: "GET",
             url: url + "?auth_token=" + that.apiKey,
-            dataType: 'json',
+            dataType: "json",
             data: {},
             crossDomain: true,
             xhrFields: {
                 withCredentials: true
             },
             success: callback,
-            error: that.handleError
+            error: function(e) {
+                      that.handleError(e.responseText);
+                    }
         });
     };
 
     this.handleError = function(result) {
-        if (result.status == 401) {
+        var prased_result = $.parseJSON(result);
+        switch (prased_result.error_code) {
+          case -1:
+            nf.error("Real-Debrid internal error");
+            break;
+          case 8:
+          case 9:
             nf.error("Unable to authenticate with Real-Debrid. Please click here to set-up your API key.", nf.openOptions);
-        } else {
-            nf.error("Uh Oh. Real-Debrid API responded with: " + response.statusText + " (" + response.status + ")");
+            break;
+          case 14:
+            nf.error("Account locked");
+            break;
+          case 15:
+            nf.error("Account not activated");
+            break;
+          case 16:
+            nf.error("Unsupported hoster");
+            break;
+          case 17:
+            nf.error("Hoster in maintenance");
+            break;
+          case 18:
+            nf.error("Hoster limit reached");
+            break;
+          case 19:
+            nf.error("Hoster temporarily unavailable");
+            break;
+          case 20:
+            nf.error("Hoster not available for free users");
+            break;
+          case 21:
+            nf.error("Too many active downloads");
+            break;
+          default:
+            nf.error("Uh Oh. Real-Debrid API responded with an unknown error. Code #: " + prased_result.error_code);
         }
     };
 
     this.unrestrict = function(url, callback) {
         that.post(URL_UNRESTRICT, {
+            link: url
+        }, callback);
+    };
+
+    this.unrestrictFolder = function(url, callback) {
+        that.post(URL_UNRESTRICT_FOLDER, {
             link: url
         }, callback);
     };
@@ -264,15 +338,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
             magnet: magnetLink,
             split: splittingSize,
             host: torrentHost
-        }, function(result) {
-            if (result.uri) {
-                chrome.tabs.create({
-                    url: result.uri
-                });
-            } else {
-                nf.error('Error adding magnet');
-            }
-        });
+        }, callback);
     };
 
     this.checkPremium = function(data) {
@@ -280,7 +346,7 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
         var expiration = new Date(data.expiration);
         var daysLeft = Math.round(Math.abs((expiration.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)));
 
-        var key = 'premium-left';
+        var key = "premium-left";
         var index = that.warnings.indexOf(key);
 
         if (daysLeft <= that.warningDays && index === -1) {
@@ -318,7 +384,9 @@ function RealDebrid(warningPercentage, warningDays, splittingSize, torrentHost) 
 function Notifier() {
 
     this.notificationId = 0;
+    this.progressNotificationId = 0;
     this.callbacks = {};
+    this.urls = [];
 
     var that = this;
 
@@ -331,15 +399,15 @@ function Notifier() {
             message: text,
             priority: 1
         };
-        chrome.notifications.create("id_" + id, options, function(notificationId) {
+        chrome.notifications.create(NORMAL_NOTIFICATION_PREFIX + id, options, function(notificationId) {
             if (onClicked) {
                 that.callbacks[notificationId] = onClicked;
             }
         });
     };
 
-    this.progress = function(title, text, progress, onClicked) {
-        var id = ++that.notificationId;
+    this.progress = function(id, title, text, progress) {
+        var id = id;
         var options = {
             iconUrl: "/icons/icon-128.png",
             type: "progress",
@@ -348,15 +416,25 @@ function Notifier() {
             priority: 1,
             progress: progress
         };
-        chrome.notifications.create("id_" + id, options, function(notificationId) {
-            if (onClicked) {
-                that.callbacks[notificationId] = onClicked;
-            }
-        });
+
+        if (progress == 100) {
+            options.buttons = [{ title: "Copy URL To Clipboard", iconUrl: "/icons/copy_18dp_2x.png" }];
+        }
+        if (progress > 0) {
+            chrome.notifications.update(PROGRESS_NOTIFICATION_PREFIX + id, options, function(){
+                  if (progress == 100 && rd.folderSize <= 1){
+                      that.urls.push({id: PROGRESS_NOTIFICATION_PREFIX + id, url: text});
+                  }
+            });
+        } else {
+          chrome.notifications.create(PROGRESS_NOTIFICATION_PREFIX + id, options);
+          nf.urls.push({id: PROGRESS_NOTIFICATION_PREFIX + nf.progressNotificationId, url: ""});
+        }
     };
 
     this.error = function(text, callback) {
         that.basic("Error", text, callback);
+        chrome.notifications.clear(PROGRESS_NOTIFICATION_PREFIX + nf.progressNotificationId);
     };
 
     this.info = function(text, callback) {
@@ -370,8 +448,15 @@ function Notifier() {
         }
     };
 
+    this.buttonClickHandler = function(notificationId, buttonIndex) {
+        var clicked = that.urls.find(function(obj) {
+                                        return obj.id == notificationId;
+                                      });
+        clipboard.copy(clicked.url);
+    };
+
     this.openOptions = function() {
-        var optionsUrl = chrome.extension.getURL('html/options.html');
+        var optionsUrl = chrome.extension.getURL("html/options.html");
         chrome.tabs.query({
             url: optionsUrl
         }, function(tabs) {
@@ -448,6 +533,18 @@ function DownloadManager(bypassNativeDl) {
                 url: url,
                 active: false
             });
+        }
+
+        if(!rd.folderSize) {
+            nf.progress(nf.progressNotificationId,"Success!",url,100);
+        } else if (rd.folderSize == 1) {
+            var l = nf.urls.length - 1;
+            nf.urls[l].url += url;
+            nf.progress(nf.progressNotificationId,"Success!","All folder files successfully added to download queue",100);
+        } else {
+            rd.folderSize--;
+            var l = nf.urls.length - 1;
+            nf.urls[l].url += url + "\n";
         }
     };
 

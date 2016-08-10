@@ -1,0 +1,69 @@
+html, body {
+	font-family: 'Roboto', 'Helvetica', sans-serif;
+	min-width: 500px;
+	min-height: 400px;
+}
+
+a {
+	color: #546e7a;
+	text-decoration: none;
+}
+
+a.mdl-button {
+	color: #3f51b5!important;
+}
+
+.mdl-layout__header {
+	padding-top: 15px;
+}
+
+.mdl-layout__header-row {
+	padding: 0 32px;
+}
+
+#download .page-content {
+	text-align: center;
+	padding: 20px;
+}
+
+.mdl-card.recentCards {
+	flex-direction: row;
+	min-height: inherit;
+	min-height: 85px;
+}
+
+.mdl-card.recentCards .mdl-card__title-text img {
+	max-height: 36px;
+	margin: 5px;
+}
+
+.mdl-card.recentCards .filename {
+	font-size: 13px;
+	word-wrap: break-word;
+}
+
+.mdl-card.recentCards .recentLinks {
+	position: absolute;
+	right: 16px;
+	bottom: 6px;
+}
+
+.mdl-card__menu {
+	font-size: 12px;
+}
+
+.page-content .login-required h6 {
+    width: 100%;
+    margin: 0;
+    position: absolute;
+	top: 0;
+    left: 0;
+	text-align: left;
+    padding: 10px 15px;
+    box-sizing: border-box;
+}
+
+.page-content .login-required .material-icons {
+	margin:0 10px 0 0;
+	vertical-align:top;
+}

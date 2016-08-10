@@ -1,3 +1,16 @@
+## 1.10.x
+
+Features:
+
+ - Material design
+ - Popup now allows you to paste link and view download history
+ - Better notifications
+ - Support for unrestricting folders
+
+Bugfixes:
+
+ - Fixed redirection to RD torrents page after adding a magnet
+
 ## 1.9.x
 
 Features:

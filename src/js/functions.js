@@ -66,10 +66,8 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
             originalUrl = "Original URL";
             unrestrictedUrl = "Unrestricted";
         } else if (pageIdentifier == "popup") {
-            originalUrl = "<i class="
-            material - icons ">file_download</i>";
-            unrestrictedUrl = "<i class="
-            material - icons ">cloud_download</i>";
+            originalUrl = "<i class=\"material-icons\">file_download</i>";
+            unrestrictedUrl = "<i class=\"material-icons\">cloud_download</i>";
         }
         for (var i = 0; i < data.length; i++) {
             createdDate = moment(data[i].generated).format('D MMM YYYY, H:mm');

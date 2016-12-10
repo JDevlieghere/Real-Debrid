@@ -72,7 +72,11 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
         for (var i = 0; i < data.length; i++) {
             createdDate = moment(data[i].generated).format('D MMM YYYY, H:mm');
             prettySize = bytesToSize(data[i].filesize);
-            hoster = data[i].host.substring(0, data[i].host.indexOf('.'));
+            if (data[i].host == "upload.af") {
+                hoster = "uploadaf"; // god, what have I done...
+            } else {
+                hoster = data[i].host.replace(/(\.)|(\-)|[^.]*$/g, "");
+            }
 
             if (pageIdentifier == "options") {
                 if (!data[i].mimeType) { // Sometimes RD API would return null values
@@ -120,7 +124,7 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
               <div class="mdl-card__menu">
                 <a href="http://www.` + data[i].host + `" target="_blank">
                   <span>
-                    <img src="https://cdn.realdebrid.xtnetwork.fr/0693/images/hosters/` + hoster + `.png" title="` + data[i].host + `">
+                    <img src="https://cdn.real-debrid.com/images/hosters/` + hoster + `.png" title="` + data[i].host + `">
                   </span>
                 </a>
               </div>

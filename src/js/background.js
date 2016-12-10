@@ -146,7 +146,7 @@ function Options() {
         });
 
         chrome.storage.sync.get({
-            'torrentHost': "1fichier.com"
+            'torrentHost': "real-debrid.com"
         }, function(result) {
             that.values.torrentHost = result.torrentHost;
             that.checkReady();

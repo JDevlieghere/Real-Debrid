@@ -15,6 +15,20 @@ a {
 
 .mdl-ripple { background: var(--main-color) !important; } /* Overwrite all */
 
+.login-required h6 {
+    width: 100%;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.login-required h6 .material-icons {
+	margin: 0 10px 0 0;
+	vertical-align: top;
+}
 
 /*
   Button
@@ -53,6 +67,7 @@ a {
 .mdl-textfield--floating-label.is-dirty .mdl-textfield__label,
 .mdl-textfield--floating-label.has-placeholder .mdl-textfield__label { color: var(--main-color); }
 .mdl-textfield__label:after { background: var(--main-color); }
+.mdl-textfield__label .material-icons { vertical-align: middle; font-size: 22px; }
 
 /*
   Card

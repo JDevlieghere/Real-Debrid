@@ -10,18 +10,7 @@ html, body {
 	padding: 20px;
 }
 
-.page-content .login-required h6 {
-    width: 100%;
-    margin: 0;
-    position: absolute;
-	top: 0;
-    left: 0;
-	text-align: left;
-    padding: 10px 15px;
-    box-sizing: border-box;
-}
-
-.page-content .login-required .material-icons { margin: 0 10px 0 0; }
+.login-required h6 { top: 0; }
 
 /*
   Material

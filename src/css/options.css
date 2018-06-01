@@ -1,3 +1,4 @@
+.login-required h6 { top: 60px; }
 .mdl-layout__content .content { max-width: 1080px; }
 .mdl-grid { padding: 8px 0; }
 
@@ -93,21 +94,6 @@
 .mdl-card.recentCards .mdl-card__title-text img {
 	max-height: 64px;
 	margin: 15px;
-}
-
-.mdl-card .login-required h6 {
-    width: 100%;
-    margin: 0;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    padding: 10px 15px;
-    box-sizing: border-box;
-}
-
-.mdl-card .login-required .material-icons {
-	margin:0 10px 0 0;
-	vertical-align:top;
 }
 
 #optionsCard { order: 1 }

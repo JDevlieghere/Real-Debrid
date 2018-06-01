@@ -117,8 +117,8 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
                   <small>` + createdDate + `</small>
                   <div class="mdl-layout-spacer spacer"></div>
 				  <div class="recentLinks">
-	                  <a href="` + data[i].link + `" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" target="_blank">` + originalUrl + `</a>
-	                  <a href="` + data[i].download + `" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" target="_blank">` + unrestrictedUrl + `</a>
+	                  <a href="` + data[i].link + `" class="mdl-button mdl-js-button mdl-js-ripple-effect" target="_blank">` + originalUrl + `</a>
+	                  <a href="` + data[i].download + `" class="mdl-button mdl-js-button mdl-js-ripple-effect" target="_blank">` + unrestrictedUrl + `</a>
 				  </div>
 			  </div>
               <div class="mdl-card__menu">

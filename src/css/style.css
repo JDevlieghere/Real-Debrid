@@ -1,0 +1,74 @@
+/*
+  General
+*/
+
+:root {
+  --main-color: #546e7a; /* Light gray */
+}
+
+html, body { font-family: 'Roboto', 'Helvetica', sans-serif; }
+
+a {
+	color: var(--main-color);
+	text-decoration: none;
+}
+
+.mdl-ripple { background: var(--main-color) !important; } /* Overwrite all */
+
+
+/*
+  Button
+*/
+
+.mdl-button {
+    color: var(--main-color);
+    padding: 0px 10px;
+ }
+
+.mdl-button.mdl-button--colored,
+.mdl-button.mdl-button--colored:hover,
+.mdl-button.mdl-button--colored:focus,
+.mdl-button.mdl-button--colored:active { background: var(--main-color); }
+
+/*
+  Radio
+*/
+
+.mdl-radio.is-checked .mdl-radio__outer-circle { border-color: var(--main-color); }
+.mdl-radio.is-checked .mdl-radio__inner-circle { background: var(--main-color); }
+
+/*
+  Switch
+*/
+
+.mdl-switch .mdl-switch__label { font-size: 14px; }
+.mdl-switch.is-checked .mdl-switch__track { background: var(--main-color); opacity:.5; }
+.mdl-switch.is-checked .mdl-switch__thumb { background: var(--main-color); }
+
+/*
+  Textfield
+*/
+
+.mdl-textfield--floating-label.is-focused .mdl-textfield__label,
+.mdl-textfield--floating-label.is-dirty .mdl-textfield__label,
+.mdl-textfield--floating-label.has-placeholder .mdl-textfield__label { color: var(--main-color); }
+.mdl-textfield__label:after { background: var(--main-color); }
+
+/*
+  Card
+*/
+
+.mdl-card__menu { font-size: 12px; }
+
+.mdl-card.recentCards {
+	flex-direction: row;
+	min-height: inherit;
+	min-height: 85px;
+}
+
+.mdl-card.recentCards .mdl-card__title-text img {
+	max-height: 36px;
+	margin: 5px;
+}
+
+.mdl-card.recentCards .filename { word-wrap: break-word; }

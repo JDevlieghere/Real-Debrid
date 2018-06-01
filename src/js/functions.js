@@ -132,5 +132,22 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
         	`;
         }
         $(".recentDownloads section").append(html);
+        document.getElementById("searchBox").addEventListener("input", search);
     });
+}
+
+function search() {
+    var keywords, recentCards, title, missCounter = 0;
+    keywords = document.getElementById('searchBox').value.toUpperCase().split(" ");
+    recentCards = document.getElementsByClassName("recentCards");
+    for (var card of recentCards) {
+        title = card.querySelector(".filename a").innerHTML.toUpperCase();
+        if (keywords.every(keyword => title.includes(keyword))) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+            missCounter++;
+        }
+        (recentCards.length == missCounter) && document.querySelector(".search").classList.add("is-invalid");
+    }
 }

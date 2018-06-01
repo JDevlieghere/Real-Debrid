@@ -30,6 +30,12 @@ a {
 	vertical-align: top;
 }
 
+.mdl-textfield.search {
+    margin: 0 auto;
+    display: block;
+    width: 50%;
+}
+
 /*
   Button
 */

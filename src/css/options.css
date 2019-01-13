@@ -1,34 +1,14 @@
-html, body {
-	font-family: 'Roboto', 'Helvetica', sans-serif;
-}
-
-a {
-	color: #546e7a;
-	text-decoration: none;
-}
-
-a.mdl-button {
-	color: #3f51b5!important;
-}
-
+.login-required h6 { top: 60px; }
+.mdl-layout__content .content { max-width: 1080px; }
+.mdl-grid { padding: 8px 0; }
 
 /*
   Header
 */
 
-.mdl-layout__header {
-	height: 130px;
-	overflow: visible; /* A fix for tooltip not showing */
-}
-
-.mdl-layout__header .mdl-layout__drawer-button {
-	color: rgba(0, 0, 0, 0.54);
-}
-
-.mdl-layout__header .material-icons {
-	color: white;
-}
-
+.mdl-layout__header { height: 130px; }
+.mdl-layout__header .mdl-layout__drawer-button { color: rgba(0, 0, 0, 0.54); }
+.mdl-layout__header .material-icons { color: white; }
 
 /*
   Left Drawer (Menu)
@@ -40,85 +20,45 @@ a.mdl-button {
 	transform: translateX(-280px);
 }
 
-.mdl-layout__drawer header {
-	padding: 16px;
-}
+.mdl-layout__drawer header { padding: 16px; }
 
 .mdl-layout__drawer .mdl-menu .mdl-menu__item {
-	display: -webkit-flex;
-	display: -ms-flexbox;
 	display: flex;
-	-webkit-align-items: center;
-	-ms-flex-align: center;
 	align-items: center;
 }
 
-.mdl-navigation {
-	-webkit-flex-grow: 1;
-	-ms-flex-positive: 1;
-	flex-grow: 1;
-}
+.mdl-layout__drawer .mdl-navigation { flex-grow: 1; }
 
-.mdl-navigation .mdl-navigation__link {
-	display: -webkit-flex !important;
-	display: -ms-flexbox !important;
-	display: flex !important;
-	-webkit-flex-direction: row;
-	-ms-flex-direction: row;
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
+	display: flex;
 	flex-direction: row;
-	-webkit-align-items: center;
-	-ms-flex-align: center;
 	align-items: center;
-	color: white!important;
+	color: #fff;
 	font-weight: 500;
-	padding: 16px 30px!important;
+	padding: 16px 30px;
 }
 
-.mdl-navigation .mdl-navigation__link:hover {
-	background-color: #263238 !important;
-	color: #37474F;
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link:hover {
+	background-color: #263238;
 	cursor: pointer;
 }
 
-.mdl-navigation__link .material-icons {
+.mdl-layout__drawer .mdl-navigation__link .material-icons {
 	font-size: 24px;
 	color: rgba(255, 255, 255, 0.56);
 	margin-right: 32px;
 }
 
-
 /*
   Cards
 */
 
-.mdl-layout__content .content {
-	max-width: 1080px;
-}
-
-.mdl-grid {
-	padding: 8px 0;
-}
-
-.mdl-card {
-	overflow: visible; /* A fix for tooltip not showing */
-	z-index: auto;
-}
-
-.mdl-card .mdl-card__title {
-	color: white;
-}
-
-.mdl-card .mdl-switch__label {
-	font-size: 14px;
-}
-
-.mdl-card__menu .material-icons {
-	color: white;
-}
-
-.mdl-card .spacer {
-	height: 15px;
-}
+.mdl-card { z-index: auto; }
+.mdl-card .spacer { height: 15px; }
+.mdl-card .value { display: inline-block; }
+.mdl-card .mdl-card__title { color: white; }
+.mdl-card .mdl-card__menu .material-icons { color: white; }
+.mdl-card .mdl-card__menu span { margin: 0 10px 0 0; }
 
 .mdl-card #avatar {
 	float:left;
@@ -136,31 +76,15 @@ a.mdl-button {
 	display: inline-block;
 }
 
-.mdl-card .value {
-	display: inline-block;
-}
-
-.mdl-card__menu a {
+.mdl-card .mdl-card__menu a {
 	font-weight: 400;
 	font-size: 14px;
 	display: inline-flex;
 }
 
-.mdl-card__menu span {
-	margin: 0 10px 0 0;
-}
-
-.mdl-card .recentDownloads .mdl-card__menu {
-	position: relative;
-}
-
-.mdl-card .recentDownloads {
-	width: 100%;
-}
-
-.mdl-card .recentDownloads section { /* An ugly fix for cards inside a card */
-	margin-right: 36px;
-}
+.mdl-card .recentDownloads .mdl-card__menu { position: relative; }
+.mdl-card .recentDownloads { width: 100%; }
+.mdl-card .recentDownloads section { margin-right: 36px; } /* An ugly fix for cards inside a card */
 
 .mdl-card.recentCards {
 	flex-direction: row;
@@ -172,48 +96,12 @@ a.mdl-button {
 	margin: 15px;
 }
 
-.mdl-card.recentCards .filename {
-	word-wrap: break-word;
-}
-
-.mdl-card .login-required h6 {
-    width: 100%;
-    margin: 0;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    padding: 10px 15px;
-    box-sizing: border-box;
-}
-
-.mdl-card .login-required .material-icons {
-	margin:0 10px 0 0;
-	vertical-align:top;
-}
-
-#optionsCard {
-	order: 1
-}
-
-#downloadsCard {
-	order: 2
-}
-
-#torrentsCard {
-	order: 3
-}
-
-#accountCard {
-	order: 4
-}
-
-#warningCard {
-	order: 5
-}
-
-#recentCard {
-	order: 6
-}
+#optionsCard { order: 1 }
+#downloadsCard { order: 2 }
+#torrentsCard { order: 3 }
+#accountCard { order: 4 }
+#warningCard { order: 5 }
+#recentCard { order: 6 }
 
 /*
   Footer
@@ -229,17 +117,9 @@ a.mdl-button {
 	padding: 22px;
 }
 
-.mdl-mini-footer #webstore {
-	background: url("/icons/webstore.png") center no-repeat;
-}
-
-.mdl-mini-footer #git {
-	background: url("/icons/github.png") center no-repeat;
-}
-
-.mdl-mini-footer #twitter {
-	background: url("/icons/twitter.png") center no-repeat;
-}
+.mdl-mini-footer #webstore { background: url("/icons/webstore.png") center no-repeat; }
+.mdl-mini-footer #git { background: url("/icons/github.png") center no-repeat; }
+.mdl-mini-footer #twitter { background: url("/icons/twitter.png") center no-repeat; }
 
 /*
 	Responsive

@@ -72,7 +72,11 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
         for (var i = 0; i < data.length; i++) {
             createdDate = moment(data[i].generated).format('D MMM YYYY, H:mm');
             prettySize = bytesToSize(data[i].filesize);
-            hoster = data[i].host.substring(0, data[i].host.indexOf('.'));
+            if (data[i].host == "upload.af") {
+                hoster = "uploadaf"; // god, what have I done...
+            } else {
+                hoster = data[i].host.replace(/(\.)|(\-)|[^.]*$/g, "");
+            }
 
             if (pageIdentifier == "options") {
                 if (!data[i].mimeType) { // Sometimes RD API would return null values
@@ -113,14 +117,14 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
                   <small>` + createdDate + `</small>
                   <div class="mdl-layout-spacer spacer"></div>
 				  <div class="recentLinks">
-	                  <a href="` + data[i].link + `" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" target="_blank">` + originalUrl + `</a>
-	                  <a href="` + data[i].download + `" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" target="_blank">` + unrestrictedUrl + `</a>
+	                  <a href="` + data[i].link + `" class="mdl-button mdl-js-button mdl-js-ripple-effect" target="_blank">` + originalUrl + `</a>
+	                  <a href="` + data[i].download + `" class="mdl-button mdl-js-button mdl-js-ripple-effect" target="_blank">` + unrestrictedUrl + `</a>
 				  </div>
 			  </div>
               <div class="mdl-card__menu">
                 <a href="http://www.` + data[i].host + `" target="_blank">
                   <span>
-                    <img src="https://cdn.realdebrid.xtnetwork.fr/0693/images/hosters/` + hoster + `.png" title="` + data[i].host + `">
+                    <img src="https://cdn.real-debrid.com/images/hosters/` + hoster + `.png" title="` + data[i].host + `">
                   </span>
                 </a>
               </div>
@@ -128,5 +132,22 @@ function getDownloads(callback) { // TODO: Find a way to get all hoster icons
         	`;
         }
         $(".recentDownloads section").append(html);
+        document.getElementById("searchBox").addEventListener("input", search);
     });
+}
+
+function search() {
+    var keywords, recentCards, title, missCounter = 0;
+    keywords = document.getElementById('searchBox').value.toUpperCase().split(" ");
+    recentCards = document.getElementsByClassName("recentCards");
+    for (var card of recentCards) {
+        title = card.querySelector(".filename a").innerHTML.toUpperCase();
+        if (keywords.every(keyword => title.includes(keyword))) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+            missCounter++;
+        }
+        (recentCards.length == missCounter) && document.querySelector(".search").classList.add("is-invalid");
+    }
 }

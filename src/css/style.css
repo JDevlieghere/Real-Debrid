@@ -1,0 +1,95 @@
+/*
+  General
+*/
+
+:root {
+  --main-color: #546e7a; /* Light gray */
+}
+
+html, body { font-family: 'Roboto', 'Helvetica', sans-serif; }
+
+a {
+	color: var(--main-color);
+	text-decoration: none;
+}
+
+.mdl-ripple { background: var(--main-color) !important; } /* Overwrite all */
+
+.login-required h6 {
+    width: 100%;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.login-required h6 .material-icons {
+	margin: 0 10px 0 0;
+	vertical-align: top;
+}
+
+.mdl-textfield.search {
+    margin: 0 auto;
+    display: block;
+    width: 50%;
+}
+
+/*
+  Button
+*/
+
+.mdl-button {
+    color: var(--main-color);
+    padding: 0px 10px;
+ }
+
+.mdl-button.mdl-button--colored,
+.mdl-button.mdl-button--colored:hover,
+.mdl-button.mdl-button--colored:focus,
+.mdl-button.mdl-button--colored:active { background: var(--main-color); }
+
+/*
+  Radio
+*/
+
+.mdl-radio.is-checked .mdl-radio__outer-circle { border-color: var(--main-color); }
+.mdl-radio.is-checked .mdl-radio__inner-circle { background: var(--main-color); }
+
+/*
+  Switch
+*/
+
+.mdl-switch .mdl-switch__label { font-size: 14px; }
+.mdl-switch.is-checked .mdl-switch__track { background: var(--main-color); opacity:.5; }
+.mdl-switch.is-checked .mdl-switch__thumb { background: var(--main-color); }
+
+/*
+  Textfield
+*/
+
+.mdl-textfield--floating-label.is-focused .mdl-textfield__label,
+.mdl-textfield--floating-label.is-dirty .mdl-textfield__label,
+.mdl-textfield--floating-label.has-placeholder .mdl-textfield__label { color: var(--main-color); }
+.mdl-textfield__label:after { background: var(--main-color); }
+.mdl-textfield__label .material-icons { vertical-align: middle; font-size: 22px; }
+
+/*
+  Card
+*/
+
+.mdl-card__menu { font-size: 12px; }
+
+.mdl-card.recentCards {
+	flex-direction: row;
+	min-height: inherit;
+	min-height: 85px;
+}
+
+.mdl-card.recentCards .mdl-card__title-text img {
+	max-height: 36px;
+	margin: 5px;
+}
+
+.mdl-card.recentCards .filename { word-wrap: break-word; }

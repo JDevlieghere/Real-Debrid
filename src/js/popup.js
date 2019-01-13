@@ -12,6 +12,14 @@ $("#options").click(function() {
     });
 });
 
+$(".mdl-layout__tab-bar").click(function() {
+    ($(this).children(".is-active").attr("href") == "#recent") ? $("#search").show() : $("#search").hide();
+});
+
+$("#search").click(function() {
+    $(".search").toggle();
+});
+
 $(".downloadPage").click(function() {
     chrome.tabs.getSelected(null, function(tab) {
         chrome.runtime.sendMessage({
